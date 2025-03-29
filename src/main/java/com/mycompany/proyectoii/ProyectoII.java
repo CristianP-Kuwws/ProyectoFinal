@@ -7,7 +7,7 @@ package com.mycompany.proyectoii;
 
 import GUI.VentanaPrincipal;
 
-/**
+/** 
  *
  * @author hazky
  */
