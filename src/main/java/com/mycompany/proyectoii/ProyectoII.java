@@ -17,7 +17,7 @@ public class ProyectoII {
         VentanaPrincipal ventana = new VentanaPrincipal();
         ventana.setVisible(true);
         
-        System.out.println("prueba de pull elliam");
+        System.out.println("prueba de pull elliam.");
         
         
     }
