@@ -680,3 +680,4 @@ public class ventanaadmin extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField9;
     // End of variables declaration//GEN-END:variables
 }
+//
