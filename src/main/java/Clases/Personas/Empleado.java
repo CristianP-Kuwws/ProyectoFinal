@@ -16,10 +16,5 @@ public class Empleado extends Usuario {
     public int getIdEmpleado() {  
         return idEmpleado;  
     }  
-
-    // Setter para la contrasenia  
-    public void setIdEmpleado(int idEmpleado) {  
-        this.idEmpleado = idEmpleado;  
-    }
     
 }
