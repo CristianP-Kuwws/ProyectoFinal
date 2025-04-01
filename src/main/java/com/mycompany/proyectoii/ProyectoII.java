@@ -21,6 +21,8 @@ public class ProyectoII {
         //ventana.setVisible(true);
         
         System.out.println("prueba de pull elliam.");
+        System.out.println("prueba de pull Eithan.");
+        System.out.println("prueba de pull Eithan.");
         
         //Para comprobar si hubo conexion con BD (Pongan su info en ConexionBD.java)
         
