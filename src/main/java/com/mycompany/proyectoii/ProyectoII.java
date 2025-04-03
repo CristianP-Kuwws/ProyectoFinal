@@ -17,8 +17,8 @@ public class ProyectoII {
 
     public static void main(String[] args) {
         
-        //VentanaPrincipal ventana = new VentanaPrincipal();
-        //ventana.setVisible(true);
+        VentanaPrincipal ventana = new VentanaPrincipal();
+        ventana.setVisible(true);
         
         System.out.println("prueba de pull elliam.");
         System.out.println("prueba de pull Eithan.");
@@ -40,9 +40,6 @@ public class ProyectoII {
             System.out.println("No se pudo establecer la conexión.");
         }
          
-        //Cerrar, quizas esta demas
-
-        conexionBD.cerrarConexion();
     
         
     }

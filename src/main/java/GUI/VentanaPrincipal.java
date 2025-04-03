@@ -4,6 +4,10 @@
  */
 package GUI;
 
+import Clases.Personas.Administrador;
+import Clases.Personas.Empleado;
+import Clases.Personas.Usuario;
+import Datos.DAOS.Login;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
@@ -236,35 +240,34 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             contrasenia.equals("********")) {
             JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos correctamente.", "Error", JOptionPane.ERROR_MESSAGE);
         } 
-        /* Esperando implementacion y mejora con bd.
-        for (Usuario usuarioInd : listaUsuarios) {
-            if (usuarioInd.getCorreo().equals(correoIngresado) && usuarioInd.getContrasenia().equals(contraseniaIngresada)) {
-                encontrado = true;
-		setUsuarioActual(usuarioInd); 
-
-		if (usuarioInd instanceof UsuarioAdmin) {
-                    JOptionPane.showMessageDialog(null, "Bienvenido " + usuarioInd.getNombre() + ".\nNivel de acceso: Administrador.");
-		} else {
-                    JOptionPane.showMessageDialog(null, "Bienvenido " + usuarioInd.getNombre() + ".\nNivel de acceso: Usuario.");
-		}
-
-		break; 
-            }
-	}
-
-	if (!encontrado) {
-            JOptionPane.showMessageDialog(null, "Correo o contraseña incorrectos.");
-	 }
         
-        */
+        //Iniciar Sesion
+        
+        Login IniciarSesion = new Login();
+        Usuario usuarioActual = IniciarSesion.login(nombreUsuario, contrasenia);
+            
+        if (usuarioActual != null) {
+            
+            if (usuarioActual instanceof Administrador) {
+                ventanaadmin ventanaAdmin = new ventanaadmin();
+                ventanaAdmin.setVisible(true);
+            } else if (usuarioActual instanceof Empleado) {
+                ventanaProductos ventanaProductos = new ventanaProductos();
+                ventanaProductos.setVisible(true);
+            }
+        } else {
+        JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+        
+        
     }//GEN-LAST:event_jpanelIniciarSesionMouseClicked
-
+    //No funcional.
     private void jpanelRegistrarseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jpanelRegistrarseMouseClicked
 
         Registro registrarUsuario = new Registro();
         registrarUsuario.setVisible(true);
         
-        this.setEnabled(false); // Deshabilita VentanaPrincipal pero la deja visible
+        this.setEnabled(false); // Deshabilita VentanaPrincipal pero la deja visible // posible problema?
 
         
         registrarUsuario.addWindowListener(new WindowAdapter() {

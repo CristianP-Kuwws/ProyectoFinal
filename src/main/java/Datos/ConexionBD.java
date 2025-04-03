@@ -1,14 +1,9 @@
-
 package Datos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- *
- * @author hazky
- */
 public class ConexionBD {
     private static ConexionBD instancia;
     private Connection conexion;
@@ -19,6 +14,7 @@ public class ConexionBD {
 
     private ConexionBD() {
         try {
+            // Mantener la conexión abierta durante toda la vida del programa
             conexion = DriverManager.getConnection(url, usuario, contraseña);
             System.out.println("¡Conexión exitosa!");
         } catch (SQLException e) {
