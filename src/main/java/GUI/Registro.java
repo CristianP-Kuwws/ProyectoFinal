@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import Datos.DAOS.RegistrarUsuario;
 import java.awt.Color;
 import java.util.Arrays;
 import javax.swing.JOptionPane;
@@ -205,38 +206,44 @@ public class Registro extends javax.swing.JFrame {
     
     //Funcionalidades Generales
     private void jpanelCrearUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jpanelCrearUsuarioMouseClicked
-        //Conseguir info
+        // Conseguir info
         String nombreUsuario = campoUsuario.getText();
         String correo = campoCorreo.getText();
         char[] contraseniaArr = campoContrasenia.getPassword();
-        String contrasenia = new String(contraseniaArr);
-        
-        Boolean encontrado = false;
+        String contraseña = new String(contraseniaArr);
 
-        
-        //futura implementacion? validar si el correo ya existe, deberia ser unico para cada usuario
-        
-        //for (Usuario usuarioAct : listaUsuarios) {
-            //if (usuarioAct.getCorreo().equals(correo)) {
-		//encontrado = true;
-		//break;
-            //}
-	//}
-        
-        if (nombreUsuario.isEmpty() || correo.isEmpty() || contrasenia.isEmpty() ||
-            nombreUsuario.equals("Ingresa tu nombre de usuario") ||
-            correo.equals("Ingresa un correo") ||
-            contrasenia.equals("********")) {
+        // Verificar que los campos no esten vacios
+        if (nombreUsuario.isEmpty() || correo.isEmpty() || contraseña.isEmpty()
+                || nombreUsuario.equals("Ingresa tu nombre de usuario")
+                || correo.equals("Ingresa un correo")
+                || contraseña.equals("********")) {
             JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos correctamente.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else if (encontrado) {
-            JOptionPane.showMessageDialog(null, "Este correo ya existe, inicia sesion o crea uno nuevo al agregar un usuario.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null, "Empleado Estandar registrado:\nNombre: " + nombreUsuario + "\nCorreo: " + correo);
+            return; 
         }
-        
-        
-        
-        //Finalizado.
+
+        RegistrarUsuario registro = new RegistrarUsuario();
+
+        // Verificar si el correo ya existe antes de registrarlo
+        if (registro.usuarioExiste(correo)) {
+            JOptionPane.showMessageDialog(null, "Este correo ya existe, inicia sesion o usa otro correo.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Registrar
+        boolean registrado = registro.registrarUsuario(nombreUsuario, correo, contraseña);
+
+        if (registrado) {
+            JOptionPane.showMessageDialog(null, "Empleado registrado correctamente:\nNombre: " + nombreUsuario + "\nCorreo: " + correo);
+
+            // Limpiar campos
+            campoUsuario.setText("");
+            campoCorreo.setText("");
+            campoContrasenia.setText("");
+        } else {
+            JOptionPane.showMessageDialog(null, "Error al registrar usuario.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Limpiar el array
         Arrays.fill(contraseniaArr, ' ');
 
     }//GEN-LAST:event_jpanelCrearUsuarioMouseClicked
