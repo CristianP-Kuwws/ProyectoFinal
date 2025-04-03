@@ -268,7 +268,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         registrarUsuario.setVisible(true);
         
         this.setEnabled(false); // Deshabilita VentanaPrincipal pero la deja visible // posible problema?
-
+        //this.setVisible(false);
         
         registrarUsuario.addWindowListener(new WindowAdapter() {
             @Override

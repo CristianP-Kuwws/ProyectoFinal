@@ -30,6 +30,14 @@ public class ConexionBD {
     }
 
     public Connection getConexion() {
+        try {
+            if (conexion == null || conexion.isClosed()) {
+                conexion = DriverManager.getConnection(url, usuario, contraseña);
+                System.out.println("Se ha reestablecido la conexión.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener la conexión: " + e.getMessage());
+        }
         return conexion;
     }
 

@@ -136,10 +136,10 @@ public class ventanaadmin extends javax.swing.JFrame {
 
         jTable4.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null}
+                {null, null, null}
             },
             new String [] {
-                "ID factura", "Fecha"
+                "ID factura", "monto", "Fecha"
             }
         ));
         jScrollPane4.setViewportView(jTable4);
