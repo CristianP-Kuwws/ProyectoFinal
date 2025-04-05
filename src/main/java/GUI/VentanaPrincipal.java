@@ -255,13 +255,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 ventanaProductos ventanaProductos = new ventanaProductos();
                 ventanaProductos.setVisible(true);
             }
+            setVisible(false);
         } else {
         JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
+        }
         
         
     }//GEN-LAST:event_jpanelIniciarSesionMouseClicked
-    //No funcional.
+    void mostarVP(){
+    setVisible(true);
+    
+    }
+//No funcional.
     private void jpanelRegistrarseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jpanelRegistrarseMouseClicked
 
         Registro registrarUsuario = new Registro();
