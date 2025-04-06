@@ -55,5 +55,9 @@ public class Factura implements Calculos {
         BigDecimal itbis = subtotal.multiply(new BigDecimal("0.18"));
         return itbis;
     }
+    
+    public void exportarComoPDF(String nombreArchivo, int idCliente) {
+    GenerarFactura.generarFacturaPDF(nombreArchivo, idFactura, idCliente, listaProductos, calculoSubtotal(), calculoITBIS(), calculoTotal());
+    }
   
 }
