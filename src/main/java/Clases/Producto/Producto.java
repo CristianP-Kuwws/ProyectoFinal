@@ -40,9 +40,7 @@ public class Producto {
         return stock;  
     }  
     
-    //Metodos para admin. Reemplazan directamente a los setters de las variables importantes para hacer cambios respectivos en bd.
-    
-    // Un actualizarIdProducto o un setter de idProducto no deberian ser implementados. Por ende solo deje los basicos.
+    // Los metodos del DAOS fueron implementados, entonces esto es innecesario?
     
    
     public void actualizarMarca(String nuevaMarca) {
