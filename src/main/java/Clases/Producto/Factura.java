@@ -1,5 +1,6 @@
 package Clases.Producto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 /**
@@ -8,8 +9,8 @@ import java.util.ArrayList;
  */
 public class Factura implements Calculos {
     
-    private int idFactura ;
-    private int idEmpleado ;
+    private int idFactura;
+    private int idEmpleado;
     private ArrayList<Producto> listaProductos;
     
     public Factura(int idFactura, int idEmpleado) {
@@ -18,7 +19,7 @@ public class Factura implements Calculos {
         listaProductos = new ArrayList();
     }
     
-    //Metodos basicos, abierto a posible implementacion en cuanto a termino de lista segun futuras necesidades
+    //Metodos basicos
     
      public int getIdFactura() {
         return idFactura;
@@ -35,21 +36,28 @@ public class Factura implements Calculos {
     //Metodos de Interface
 
     @Override
-    public void calculoTotal() {
-        //Esperando implementacion
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public BigDecimal calculoTotal() {
+        return calculoSubtotal().add(calculoITBIS());
     }
 
     @Override
-    public void calculoSubtotal() {
-        //Esperando implementacion
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public BigDecimal calculoSubtotal() {
+        BigDecimal subtotal = BigDecimal.ZERO;
+        for (Producto productoInd : listaProductos) {
+            subtotal = subtotal.add(productoInd.getPrecio());
+        }
+        return subtotal;
     }
 
     @Override
-    public void calculoITBIS() {
-        //Esperando implementacion
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public BigDecimal calculoITBIS() {
+        BigDecimal subtotal = calculoSubtotal();
+        BigDecimal itbis = subtotal.multiply(new BigDecimal("0.18"));
+        return itbis;
+    }
+    
+    public void exportarComoPDF(String nombreArchivo, int idCliente) {
+    GenerarFactura.generarFacturaPDF(nombreArchivo, idFactura, idCliente, listaProductos, calculoSubtotal(), calculoITBIS(), calculoTotal());
     }
   
 }

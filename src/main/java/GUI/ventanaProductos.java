@@ -1,5 +1,13 @@
 package GUI;
 
+import Datos.ConexionBD;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -10,14 +18,68 @@ package GUI;
  * @author Eithan
  */
 public class ventanaProductos extends javax.swing.JFrame {
-
+    
+    private String productoSeleccionado = "";
+    private double precioSeleccionado = 0;
+    private int cantidadSeleccionada = 0;
+    
     /**
      * Creates new form ventanaProductos
      */
     public ventanaProductos() {
-        initComponents();
+        initComponents();  
+        cargarProductos();
     }
 
+    
+    //aqui se van a cargar los productos de la base de datos. solamente la marca y el precio.  
+    private void cargarProductos() {
+        
+        Connection conn = ConexionBD.getInstancia().getConexion();
+        if (conn != null) {
+            
+            try {
+                String sql = "SELECT marca, precio FROM productos";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+                
+                modelo.setRowCount(0);
+                
+                while (rs.next()) { 
+                    String marca = rs.getString("marca");
+                    double precio = rs.getDouble("precio");
+                    
+                    modelo.addRow(new Object[]{marca, precio});
+            }
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                
+            }
+        
+        }  else {
+            
+            JOptionPane.showMessageDialog(this, "Error de conexion a la base de datos.");
+    }
+} 
+    
+    //metodo para actualizar la tabla cada vez que le agregemos un producto se actualice  el total
+    
+    private void actualizarTotal() {
+    double total = 0;
+    DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+    
+    for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+        total += (double) modeloCarrito.getValueAt(i, 3); // este es el  subtotal
+    }
+    
+    lblPagar.setText("Total a Pagar: $" + total);
+}
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -62,10 +124,9 @@ public class ventanaProductos extends javax.swing.JFrame {
         txtNombreCliente = new javax.swing.JTextField();
         txtCedula = new javax.swing.JTextField();
         lblPagar = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -83,18 +144,18 @@ public class ventanaProductos extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Descripcion", "Precio Unitario", "Cantidad"
+                "Nombre", "Precio Unitario"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 300, 360));
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 310, 360));
 
         jLabel4.setBackground(new java.awt.Color(0, 0, 0));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Agregar Cantidad ");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 220, -1, -1));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, -1, -1));
         jPanel2.add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 240, 70, -1));
 
         jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
@@ -114,6 +175,11 @@ public class ventanaProductos extends javax.swing.JFrame {
         btnagregarCantidad.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Blue"));
         btnagregarCantidad.setForeground(new java.awt.Color(255, 255, 255));
         btnagregarCantidad.setText("Confirmar");
+        btnagregarCantidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnagregarCantidadActionPerformed(evt);
+            }
+        });
         jPanel2.add(btnagregarCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 280, 90, 30));
 
         txtBuscador.addActionListener(new java.awt.event.ActionListener() {
@@ -124,7 +190,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel2.add(txtBuscador, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 170, -1));
 
         boxFiltrar.setEditable(true);
-        boxFiltrar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Descripcion", "Precio Unitario" }));
+        boxFiltrar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nombre", "Precio Unitario" }));
         boxFiltrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boxFiltrarActionPerformed(evt);
@@ -167,21 +233,15 @@ public class ventanaProductos extends javax.swing.JFrame {
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Descripcion", "Precio", "Cantidad", "Subtotal"
+                "Nombre", "Precio", "Cantidad", "Subtotal"
             }
         ));
         jScrollPane2.setViewportView(jTable2);
 
-        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 180, 310, 370));
+        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 310, 370));
 
         btnEliminar.setBackground(new java.awt.Color(255, 204, 153));
         btnEliminar.setForeground(new java.awt.Color(0, 0, 0));
@@ -223,6 +283,11 @@ public class ventanaProductos extends javax.swing.JFrame {
         btnEliminarCantidad.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Blue"));
         btnEliminarCantidad.setForeground(new java.awt.Color(255, 255, 255));
         btnEliminarCantidad.setText("Confirmar");
+        btnEliminarCantidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarCantidadActionPerformed(evt);
+            }
+        });
         jPanel3.add(btnEliminarCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 250, -1, -1));
 
         btnLimpiar.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Red"));
@@ -271,7 +336,15 @@ public class ventanaProductos extends javax.swing.JFrame {
             }
         });
         jPanel3.add(txtCedula, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 180, -1));
-        jPanel3.add(lblPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 560, 130, 30));
+        jPanel3.add(lblPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 560, 190, 30));
+
+        jButton1.setText("Enviar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, -1, -1));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 0, 450, 600));
 
@@ -282,30 +355,39 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 30, 270, 30));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 890, 600));
-
-        jMenu1.setText("Informacion");
-        jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Opction");
-        jMenuBar1.add(jMenu2);
-
         setJMenuBar(jMenuBar1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     
+  
     
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
+        
+        int row = jTable2.getSelectedRow(); 
+        
+        if (row != -1) {
+        DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+        modeloCarrito.removeRow(row);
+        actualizarTotal();  
+        
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para eliminar.");
+    }
+    
+     
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
         // TODO add your handling code here:
+        
+               
     }//GEN-LAST:event_btnPagarActionPerformed
-
+ 
     private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:       
     }//GEN-LAST:event_txtBuscadorActionPerformed
 
     private void boxFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxFiltrarActionPerformed
@@ -314,12 +396,75 @@ public class ventanaProductos extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         // TODO add your handling code here:
+        
+        String filtro = boxFiltrar.getSelectedItem().toString();
+        String busqueda = txtBuscador.getText();
+        
+        Connection conn = ConexionBD.getInstancia().getConexion();
+        
+        if (conn != null) {
+            try {
+                String sql = "SELECT marca, precio FROM productos";
+                
+                if (!busqueda.isEmpty()) {
+                    
+                    if (filtro.equals("Nombre")) {
+                        sql += " WHERE marca LIKE '%" + busqueda + "%'";
+                    
+                    
+                    } else if (filtro.equals("Precio Unitario")) {
+                        try {
+                            
+                            double precioBuscado = Double.parseDouble(busqueda);
+                            sql += " WHERE precio = " + precioBuscado;
+                        
+                        } catch (NumberFormatException e) {
+                            
+                            JOptionPane.showMessageDialog(this, "El precio debe ser un numero.");
+                            return;
+                    }
+                }
+            }
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+                
+                modelo.setRowCount(0);
+                
+
+                while (rs.next()) {
+                    String marca = rs.getString("marca");
+                    double precio = rs.getDouble("precio");
+                    
+                    modelo.addRow(new Object[]{marca, precio});
+            }
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            
+            }
+        
+        } else {
+            JOptionPane.showMessageDialog(this, "Error de conexion a la base de datos.");
+        }
+
     }//GEN-LAST:event_btnBuscarActionPerformed
 
+    
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         // TODO add your handling code here:
+        
+        DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+         modeloCarrito.setRowCount(0); 
+         actualizarTotal(); 
+        
+        
+        
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
+    
     private void txtNombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreClienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombreClienteActionPerformed
@@ -327,15 +472,145 @@ public class ventanaProductos extends javax.swing.JFrame {
     private void txtCedulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCedulaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCedulaActionPerformed
-
+  
+    
+    
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
+        
+        if (!productoSeleccionado.isEmpty() && cantidadSeleccionada > 0) {
+            
+            DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+            double subtotal = precioSeleccionado * cantidadSeleccionada;
+
+        // Verificar si ya existe el producto en el carrito
+        
+        boolean productoExistente = false;
+        
+        for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+            
+            if (modeloCarrito.getValueAt(i, 0).equals(productoSeleccionado)) {
+                
+                int cantidadExistente = (int) modeloCarrito.getValueAt(i, 2);
+                modeloCarrito.setValueAt(cantidadExistente + cantidadSeleccionada, i, 2);
+                modeloCarrito.setValueAt((cantidadExistente + cantidadSeleccionada) * precioSeleccionado, i, 3);
+                productoExistente = true;
+                break;
+            }
+        }
+        
+        if (!productoExistente) {
+            modeloCarrito.addRow(new Object[]{productoSeleccionado, precioSeleccionado, cantidadSeleccionada, subtotal});
+        }
+
+        actualizarTotal();
+
+        // Limpiar la selección
+        productoSeleccionado = "";
+        precioSeleccionado = 0;
+        cantidadSeleccionada = 0;
+        
+        JOptionPane.showMessageDialog(this, "Producto agregado al carrito correctamente.");
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(this, "Debe seleccionar primero la cantidad y el producto antes de agregar al carrito.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+    }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     
     
+    private void btnagregarCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnagregarCantidadActionPerformed
+        // TODO add your handling code here:
+        
+        int row = jTable1.getSelectedRow(); 
+        
+        if (row != -1) {
+            
+            productoSeleccionado = jTable1.getValueAt(row, 0).toString();
+            precioSeleccionado = Double.parseDouble(jTable1.getValueAt(row, 1).toString());
+            cantidadSeleccionada = Integer.parseInt(jSpinner2.getValue().toString());
+            
+            if (cantidadSeleccionada <= 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a cero.", "Error", JOptionPane.ERROR_MESSAGE);
+                productoSeleccionado = "";
+                return;
+            }
+            
+            if (cantidadSeleccionada > 20) {
+                JOptionPane.showMessageDialog(this, "No puedes seleccionar más de 20 unidades.", "Error", JOptionPane.ERROR_MESSAGE);
+                jSpinner2.setValue(20);
+                cantidadSeleccionada = 20;
+            
+            }
+            //mensaje para confirmar la cantidad xd
+            
+            JOptionPane.showMessageDialog(this, "Cantidad seleccionada: " + cantidadSeleccionada + " del producto: " + productoSeleccionado);
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto primero.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        
+        }
+
+    }//GEN-LAST:event_btnagregarCantidadActionPerformed
+
+  
     
+    private void btnEliminarCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCantidadActionPerformed
+    // TODO add your handling code here:
+    int row = jTable2.getSelectedRow();
+    if (row != -1) {
+        int cantidadActual = (int) jTable2.getValueAt(row, 2); 
+        int cantidadEliminar = (int) jSpinner1.getValue(); 
+
+        // verificamos si la cantidad  es negativa
+        if (cantidadEliminar < 0) {
+            JOptionPane.showMessageDialog(this, "No se puede eliminar una cantidad negativa. Acción no válida.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;  
+        }
+
+        // verificamos si la cantidad  es mayor que la cantidad disponible
+        if (cantidadEliminar > cantidadActual) {
+            JOptionPane.showMessageDialog(this, "No puedes eliminar más de la cantidad disponible.", "Cantidad excedida", JOptionPane.ERROR_MESSAGE);
+            return;  
+        }
+
+       //La resta 
+        int cantidadRestante = cantidadActual - cantidadEliminar;
+        
+        // Si la cantidad restante es 0 elimininaos el producto
+        if (cantidadRestante == 0) {
+            
+            DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+            modeloCarrito.removeRow(row);
+            
+            JOptionPane.showMessageDialog(this, "El producto ha sido eliminado del carrito porque no hay cantidad restante.", "Producto eliminado", JOptionPane.INFORMATION_MESSAGE);
+        
+        } else {
+            
+            // Si la cantidad restante es mayor que 0, actualizar la cantidad y el subtotal
+            
+            DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+            
+            modeloCarrito.setValueAt(cantidadRestante, row, 2); 
+            double precio = (double) jTable2.getValueAt(row, 1); 
+            modeloCarrito.setValueAt(cantidadRestante * precio, row, 3); 
+            
+            JOptionPane.showMessageDialog(this, "La cantidad se ha actualizado en el carrito.", "Cantidad actualizada", JOptionPane.INFORMATION_MESSAGE);
+        }
+       
+        actualizarTotal();
+    } else {
+        JOptionPane.showMessageDialog(this, "Seleccione un producto para modificar la cantidad.");
+    }
+
+    }//GEN-LAST:event_btnEliminarCantidadActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     
+  
     /**
      * @param args the command line arguments
      */
@@ -380,6 +655,7 @@ public class ventanaProductos extends javax.swing.JFrame {
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnPagar;
     private javax.swing.JButton btnagregarCantidad;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -392,8 +668,6 @@ public class ventanaProductos extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
