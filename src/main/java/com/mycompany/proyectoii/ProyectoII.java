@@ -5,9 +5,11 @@
 package com.mycompany.proyectoii;
 
 
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme; //este me gusta mucho
 import Datos.ConexionBD;
 import GUI.VentanaPrincipal;
 import java.sql.Connection;
+import javax.swing.UIManager;
 
 /** 
  *
@@ -16,7 +18,14 @@ import java.sql.Connection;
 public class ProyectoII {
 
     public static void main(String[] args) {
-        
+              
+        try {
+            UIManager.setLookAndFeel(new FlatMaterialLighterIJTheme());
+           
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+      
         VentanaPrincipal ventana = new VentanaPrincipal();
         ventana.setVisible(true);
         
