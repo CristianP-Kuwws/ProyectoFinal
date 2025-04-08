@@ -499,7 +499,7 @@ public class ventanaadmin extends javax.swing.JFrame {
                 
             }
         });
-        
+                
         
     }
 
