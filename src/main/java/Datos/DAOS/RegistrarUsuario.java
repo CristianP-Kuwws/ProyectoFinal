@@ -1,4 +1,3 @@
-// bajo revision
 package Datos.DAOS;
 
 import Datos.ConexionBD;
