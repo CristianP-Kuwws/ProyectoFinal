@@ -146,7 +146,7 @@ public class Registro extends javax.swing.JFrame {
         lblbtn.setBackground(new java.awt.Color(255, 255, 255));
         lblbtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblbtn.setForeground(new java.awt.Color(255, 255, 255));
-        lblbtn.setText("Volver al inicio");
+        lblbtn.setText("Cancelar");
         lblbtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jpanelVolverAInicio.add(lblbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 90, 40));
 
@@ -310,7 +310,9 @@ public class Registro extends javax.swing.JFrame {
             campoContrasenia.setForeground(Color.gray);
         }
     }//GEN-LAST:event_campoContraseniaFocusLost
-
+    void mostarVP(){
+    setVisible(true);
+    }
     /**
      * @param args the command line arguments
      */
