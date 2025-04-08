@@ -149,13 +149,13 @@ public class ventanaProductos extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 310, 360));
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 310, 360));
 
         jLabel4.setBackground(new java.awt.Color(0, 0, 0));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Agregar Cantidad ");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 220, -1, -1));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, -1, -1));
         jPanel2.add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 240, 70, -1));
 
         jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
@@ -170,7 +170,7 @@ public class ventanaProductos extends javax.swing.JFrame {
                 btnAgregarActionPerformed(evt);
             }
         });
-        jPanel2.add(btnAgregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 560, 130, 30));
+        jPanel2.add(btnAgregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 560, 130, 30));
 
         btnagregarCantidad.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Blue"));
         btnagregarCantidad.setForeground(new java.awt.Color(255, 255, 255));
@@ -344,7 +344,7 @@ public class ventanaProductos extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 110, -1, -1));
+        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, -1, -1));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 0, 450, 600));
 
