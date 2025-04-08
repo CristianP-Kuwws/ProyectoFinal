@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -25,6 +26,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     public VentanaPrincipal() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/justshop.jpg")).getImage());
+        //URL url = getClass().getResource("/justshop.jpg");  
+        //System.out.println("URL de la imagen: " + url);
+
     }
     
 
@@ -34,8 +39,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        lblTitulo2 = new javax.swing.JLabel();
-        lblTitulo1 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         lblIniciarSesion = new javax.swing.JLabel();
         labelUsuario = new javax.swing.JLabel();
@@ -49,8 +53,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jpanelIniciarSesion = new javax.swing.JPanel();
         lblbtn128 = new javax.swing.JLabel();
         jpanelRegistrarse = new javax.swing.JPanel();
-        lblbtn = new javax.swing.JLabel();
-        NextPag = new javax.swing.JDesktopPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -62,17 +64,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(51, 51, 51));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        lblTitulo2.setBackground(new java.awt.Color(255, 255, 255));
-        lblTitulo2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblTitulo2.setForeground(new java.awt.Color(255, 255, 255));
-        lblTitulo2.setText("Y Facturacion de Productos");
-        jPanel2.add(lblTitulo2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 330, 60));
-
-        lblTitulo1.setBackground(new java.awt.Color(255, 255, 255));
-        lblTitulo1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblTitulo1.setForeground(new java.awt.Color(255, 255, 255));
-        lblTitulo1.setText("Sistema de Inventario");
-        jPanel2.add(lblTitulo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 290, 60));
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/justshop.jpg"))); // NOI18N
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 350, 460));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, -10, 350, 470));
 
@@ -162,28 +155,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         jpanelRegistrarse.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        lblbtn.setBackground(new java.awt.Color(255, 255, 255));
-        lblbtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lblbtn.setForeground(new java.awt.Color(255, 255, 255));
-        lblbtn.setText("Registrarse");
-        lblbtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jpanelRegistrarse.add(lblbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 40));
-
         jPanel1.add(jpanelRegistrarse, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 380, -1, 40));
-
-        javax.swing.GroupLayout NextPagLayout = new javax.swing.GroupLayout(NextPag);
-        NextPag.setLayout(NextPagLayout);
-        NextPagLayout.setHorizontalGroup(
-            NextPagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 810, Short.MAX_VALUE)
-        );
-        NextPagLayout.setVerticalGroup(
-            NextPagLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 460, Short.MAX_VALUE)
-        );
-
-        jPanel1.add(NextPag, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 460));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -322,9 +294,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JDesktopPane NextPag;
     private javax.swing.JPasswordField campoContrasenia;
     private javax.swing.JTextField campoUsuario;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -335,9 +307,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel labelContrasenia;
     private javax.swing.JLabel labelUsuario;
     private javax.swing.JLabel lblIniciarSesion;
-    private javax.swing.JLabel lblTitulo1;
-    private javax.swing.JLabel lblTitulo2;
-    private javax.swing.JLabel lblbtn;
     private javax.swing.JLabel lblbtn128;
     private javax.swing.JSeparator separador1;
     private javax.swing.JSeparator separador2;
