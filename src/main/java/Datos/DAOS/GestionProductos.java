@@ -2,6 +2,7 @@ package Datos.DAOS;
 
 import Clases.Producto.Producto;
 import Datos.ConexionBD;
+import Datos.InterfacesDAOS.IProductoDAO;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,8 +13,9 @@ import java.sql.SQLException;
  *
  * @author hazky
  */
-public class GestionProductos {
-
+public class GestionProductos implements IProductoDAO{
+    
+    //Metodo propio de la clase
     private boolean productoExiste(String marca, Connection conexion) {
         String query = "SELECT COUNT(*) FROM productos WHERE marca = ?";
         try (PreparedStatement consulta = conexion.prepareStatement(query)) {
@@ -26,6 +28,7 @@ public class GestionProductos {
         }
     }
 
+    @Override
     public boolean agregarProducto(Producto producto) {
         String query = "INSERT INTO productos (marca, precio, stock) VALUES (?, ?, ?)";
 
@@ -49,6 +52,7 @@ public class GestionProductos {
         }
     }
 
+    @Override
     public boolean editarProducto(Producto producto) {
         String query = "UPDATE productos SET marca = ?, precio = ?, stock = ? WHERE idproductos = ?";
 
@@ -68,6 +72,7 @@ public class GestionProductos {
     }
 
     // Elimina un producto por su ID
+    @Override
     public boolean eliminarProducto(int idproducto) { 
         String query = "DELETE FROM productos WHERE idproductos = ?";
 

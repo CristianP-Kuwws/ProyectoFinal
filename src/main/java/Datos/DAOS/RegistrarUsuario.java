@@ -1,13 +1,15 @@
 package Datos.DAOS;
 
 import Datos.ConexionBD;
+import Datos.InterfacesDAOS.IRegistrarUsuarioDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RegistrarUsuario {
+public class RegistrarUsuario implements IRegistrarUsuarioDAO{
     
+    @Override
     public boolean usuarioExiste(String correo) {
         String query = "SELECT COUNT(*) FROM usuario WHERE correo = ?";
         try (Connection conexion = ConexionBD.getInstancia().getConexion();
@@ -25,6 +27,7 @@ public class RegistrarUsuario {
         return false;
     }
     
+    @Override
     public boolean registrarUsuario(String nombre, String correo, String contraseña) {
         if (usuarioExiste(correo)) {
             System.out.println("El correo ya está registrado.");

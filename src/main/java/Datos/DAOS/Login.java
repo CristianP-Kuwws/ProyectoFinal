@@ -4,13 +4,15 @@ import Clases.Personas.Administrador;
 import Clases.Personas.Empleado;
 import Clases.Personas.Usuario;
 import Datos.ConexionBD;
+import Datos.InterfacesDAOS.ILoginDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Login {
+public class Login implements ILoginDAO {
     
+    @Override
     public Usuario login(String usuarioOemail, String contraseña) {
         String query = "SELECT idUsuario, nombreUsuario, tipoUsuario FROM usuario WHERE (nombreUsuario = ? OR correo = ?) and contraseña = ?";
         Connection conexion = null;

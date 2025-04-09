@@ -8,13 +8,19 @@ import java.math.BigDecimal;
  */
 public class Producto {
     
-    private final int idProducto;
+    private int idProducto;
     private String marca;
     private BigDecimal precio;
     private int stock;
     
     public Producto(int idProducto, String marca, BigDecimal precio, int stock) {
         this.idProducto = idProducto;
+        this.marca = marca;
+        this.precio = precio;
+        this.stock = stock;
+    }
+    
+    public Producto(String marca, BigDecimal precio, int stock) {
         this.marca = marca;
         this.precio = precio;
         this.stock = stock;

@@ -69,7 +69,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, -10, 350, 470));
 
-        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel3.setBackground(new java.awt.Color(122, 198, 208));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -84,13 +84,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 460, 100));
 
+        lblIniciarSesion.setBackground(new java.awt.Color(111, 162, 195));
         lblIniciarSesion.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblIniciarSesion.setForeground(new java.awt.Color(51, 51, 51));
+        lblIniciarSesion.setForeground(new java.awt.Color(110, 146, 169));
         lblIniciarSesion.setText("INICIAR SESION");
         jPanel1.add(lblIniciarSesion, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 270, 40));
 
         labelUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        labelUsuario.setForeground(new java.awt.Color(0, 0, 0));
+        labelUsuario.setForeground(new java.awt.Color(111, 162, 195));
         labelUsuario.setText("Usuario");
         jPanel1.add(labelUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 80, 30));
 
@@ -106,14 +107,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel1.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, -1, -1));
         jPanel1.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 160, 0));
 
+        separador1.setBackground(new java.awt.Color(14, 191, 214));
         separador1.setForeground(new java.awt.Color(51, 51, 51));
         jPanel1.add(separador1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 360, 10));
 
         labelContrasenia.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        labelContrasenia.setForeground(new java.awt.Color(0, 0, 0));
+        labelContrasenia.setForeground(new java.awt.Color(111, 162, 195));
         labelContrasenia.setText("Contraseña");
         jPanel1.add(labelContrasenia, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 130, 30));
 
+        separador2.setBackground(new java.awt.Color(14, 191, 214));
         separador2.setForeground(new java.awt.Color(51, 51, 51));
         jPanel1.add(separador2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 360, 10));
 
@@ -129,7 +132,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         jPanel1.add(campoContrasenia, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 330, 360, -1));
 
-        jpanelIniciarSesion.setBackground(new java.awt.Color(51, 51, 51));
+        jpanelIniciarSesion.setBackground(new java.awt.Color(14, 191, 214));
         jpanelIniciarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jpanelIniciarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -211,6 +214,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             nombreUsuario.equals("Ingresa tu nombre de usuario") ||
             contrasenia.equals("********")) {
             JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos correctamente.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         } 
         
         //Iniciar Sesion

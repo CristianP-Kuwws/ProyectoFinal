@@ -9,9 +9,11 @@ import Clases.Producto.GenerarFactura;
 import Clases.Producto.Producto;
 import Datos.ConexionBD;
 import GUI.VentanaPrincipal;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
+import javax.swing.UIManager;
 import java.util.ArrayList;
 
 /** 
@@ -21,7 +23,14 @@ import java.util.ArrayList;
 public class ProyectoII {
 
     public static void main(String[] args) {
-        
+              
+        try {
+            UIManager.setLookAndFeel(new FlatMaterialLighterIJTheme());
+           
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+      
         VentanaPrincipal ventana = new VentanaPrincipal();
         ventana.setVisible(true);
         

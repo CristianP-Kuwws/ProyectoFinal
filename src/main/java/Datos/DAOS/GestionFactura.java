@@ -1,10 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Datos.DAOS;
 
 import Datos.ConexionBD;
+import Datos.InterfacesDAOS.IFacturaDAO;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
@@ -16,9 +13,10 @@ import java.sql.SQLException;
  * @author hazky
  */
 //SOLO PARA HISTORIAL DE FACTURAS
-public class GestionFactura {
+public class GestionFactura implements IFacturaDAO {
 
     //la fecha es automaticamente generada por la bd 
+    @Override
     public boolean agregarFactura(int idEmpleado, BigDecimal total, BigDecimal subtotal, BigDecimal itbis) {
         String query = "INSERT INTO Factura (idEmpleado, total, subtotal, itbis) VALUES (?, ?, ?, ?)";
 
@@ -38,6 +36,7 @@ public class GestionFactura {
         }
     }
 
+    @Override
     public boolean eliminarFactura(int idFactura) {
         String query = "DELETE FROM Factura WHERE idFactura = ?";
 
