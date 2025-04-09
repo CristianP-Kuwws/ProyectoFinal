@@ -274,7 +274,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                     .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Agregar", jPanel3);
@@ -310,7 +310,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                     .addComponent(TFIDe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addContainerGap(159, Short.MAX_VALUE))
+                .addContainerGap(178, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Eliminar", jPanel4);
@@ -399,7 +399,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(38, 38, 38)
                         .addComponent(jButton1)))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(74, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Editar", jPanel7);
@@ -459,7 +459,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                     .addComponent(jTabbedPane1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton6)))
                 .addContainerGap())
         );
@@ -559,6 +559,80 @@ public class VentanaAdmin extends javax.swing.JFrame {
         }
 
     }
+    
+    //Ordenar por precio
+    
+    /**
+    void cargarProductosOrdenadosPorPrecio() {
+        try {
+            conexion = ConexionBD.getInstancia().getConexion();
+            modelop.setRowCount(0);
+
+            Statement statement = conexion.createStatement();
+            ResultSet resultset = statement.executeQuery("SELECT idproductos, marca, precio, stock FROM productos ORDER BY precio ASC");
+
+            while (resultset.next()) {
+                modelop.addRow(new Object[]{
+                    resultset.getInt("idproductos"),
+                    resultset.getString("marca"),
+                    resultset.getString("precio"),
+                    resultset.getString("stock")
+                });
+            }
+
+            resultset.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            System.out.println("Error al cargar productos por precio: " + e.getMessage());
+        } finally {
+            try {
+                if (seteo != null) {
+                    seteo.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    } **/
+    
+    //Por stock
+    
+    /**
+    
+    void cargarProductosOrdenadosPorStock() {
+        try {
+            conexion = ConexionBD.getInstancia().getConexion();
+            modelop.setRowCount(0);
+
+            Statement statement = conexion.createStatement();
+            ResultSet resultset = statement.executeQuery("SELECT idproductos, marca, precio, stock FROM productos ORDER BY stock DESC");
+
+            while (resultset.next()) {
+                modelop.addRow(new Object[]{
+                    resultset.getInt("idproductos"),
+                    resultset.getString("marca"),
+                    resultset.getString("precio"),
+                    resultset.getString("stock")
+                });
+            }
+
+            resultset.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            System.out.println("Error al cargar productos por stock: " + e.getMessage());
+        } finally {
+            try {
+                if (seteo != null) {
+                    seteo.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    } **/
+
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
         setVisible(false);
