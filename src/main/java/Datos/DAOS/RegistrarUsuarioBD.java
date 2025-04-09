@@ -7,8 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RegistrarUsuario implements IRegistrarUsuarioDAO{
-    
+public class RegistrarUsuarioBD implements IRegistrarUsuarioDAO{
+   
+    // Para verificar si el nuevo correo con el que ingresara el usuario ya existe.
     @Override
     public boolean usuarioExiste(String correo) {
         String query = "SELECT COUNT(*) FROM usuario WHERE correo = ?";
@@ -48,7 +49,6 @@ public class RegistrarUsuario implements IRegistrarUsuarioDAO{
         } catch (SQLException e) {
             System.out.println("Error al registrar usuario: " + e.getMessage());
         }
-        
         return false;
     }
 }

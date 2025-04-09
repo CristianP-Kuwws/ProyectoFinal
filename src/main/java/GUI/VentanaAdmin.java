@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI;
 
 import Clases.Producto.Producto;
 import Datos.ConexionBD;
-import Datos.DAOS.GestionProductos;
+import Datos.DAOS.GestionProductosBD;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,13 +10,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;  
+import javax.swing.table.DefaultTableModel;
 
-/** 
+/**
  *
  * @author ellia
  */
-public class ventanaadmin extends javax.swing.JFrame {
+public class VentanaAdmin extends javax.swing.JFrame {
 
     DefaultTableModel modelof = new DefaultTableModel(new Object[][]{}, new String[]{"ID Factura", "Monto", "Fecha", "ID cliente"});
     DefaultTableModel modelofc = new DefaultTableModel(new Object[][]{}, new String[]{"ID Factura", "Monto", "Fecha"});
@@ -29,10 +25,10 @@ public class ventanaadmin extends javax.swing.JFrame {
     /**
      * Creates new form ventanaadmin
      */
-    public ventanaadmin() {
+    public VentanaAdmin() {
         initComponents();
         actualizartabla();
-        
+
     }
 
     /**
@@ -278,7 +274,7 @@ public class ventanaadmin extends javax.swing.JFrame {
                     .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Agregar", jPanel3);
@@ -314,7 +310,7 @@ public class ventanaadmin extends javax.swing.JFrame {
                     .addComponent(TFIDe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addContainerGap(159, Short.MAX_VALUE))
+                .addContainerGap(178, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Eliminar", jPanel4);
@@ -403,7 +399,7 @@ public class ventanaadmin extends javax.swing.JFrame {
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(38, 38, 38)
                         .addComponent(jButton1)))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(74, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Editar", jPanel7);
@@ -463,7 +459,7 @@ public class ventanaadmin extends javax.swing.JFrame {
                     .addComponent(jTabbedPane1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton6)))
                 .addContainerGap())
         );
@@ -530,6 +526,7 @@ public class ventanaadmin extends javax.swing.JFrame {
             }
         }
 
+        //
         try {
             conexion = ConexionBD.getInstancia().getConexion();
 
@@ -562,6 +559,80 @@ public class ventanaadmin extends javax.swing.JFrame {
         }
 
     }
+    
+    //Ordenar por precio
+    
+    /**
+    void cargarProductosOrdenadosPorPrecio() {
+        try {
+            conexion = ConexionBD.getInstancia().getConexion();
+            modelop.setRowCount(0);
+
+            Statement statement = conexion.createStatement();
+            ResultSet resultset = statement.executeQuery("SELECT idproductos, marca, precio, stock FROM productos ORDER BY precio ASC");
+
+            while (resultset.next()) {
+                modelop.addRow(new Object[]{
+                    resultset.getInt("idproductos"),
+                    resultset.getString("marca"),
+                    resultset.getString("precio"),
+                    resultset.getString("stock")
+                });
+            }
+
+            resultset.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            System.out.println("Error al cargar productos por precio: " + e.getMessage());
+        } finally {
+            try {
+                if (seteo != null) {
+                    seteo.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    } **/
+    
+    //Por stock
+    
+    /**
+    
+    void cargarProductosOrdenadosPorStock() {
+        try {
+            conexion = ConexionBD.getInstancia().getConexion();
+            modelop.setRowCount(0);
+
+            Statement statement = conexion.createStatement();
+            ResultSet resultset = statement.executeQuery("SELECT idproductos, marca, precio, stock FROM productos ORDER BY stock DESC");
+
+            while (resultset.next()) {
+                modelop.addRow(new Object[]{
+                    resultset.getInt("idproductos"),
+                    resultset.getString("marca"),
+                    resultset.getString("precio"),
+                    resultset.getString("stock")
+                });
+            }
+
+            resultset.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            System.out.println("Error al cargar productos por stock: " + e.getMessage());
+        } finally {
+            try {
+                if (seteo != null) {
+                    seteo.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    } **/
+
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
         setVisible(false);
@@ -571,7 +642,6 @@ public class ventanaadmin extends javax.swing.JFrame {
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
-
         try {
             Connection conexion = ConexionBD.getInstancia().getConexion();
             String id = TFEE.getText();
@@ -599,7 +669,6 @@ public class ventanaadmin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "ID inválido.", "Error", JOptionPane.ERROR_MESSAGE);
             System.out.println("ID inválido: " + e.getMessage());
         }
-
 
     }//GEN-LAST:event_jButton8ActionPerformed
 
@@ -654,22 +723,20 @@ public class ventanaadmin extends javax.swing.JFrame {
     private void TFIDclienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFIDclienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_TFIDclienteActionPerformed
-    
-    
+
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-
         try {
             String nom = TFPnombre.getText();
             BigDecimal precio = new BigDecimal(TFPprecio.getText());
             int stock = Integer.parseInt(TFPstock.getText());
 
             Producto nuevoProducto = new Producto(nom, precio, stock);
-            
-            GestionProductos gestor = new GestionProductos();
+
+            GestionProductosBD gestor = new GestionProductosBD();
             if (gestor.agregarProducto(nuevoProducto)) {
                 JOptionPane.showMessageDialog(null, "Producto agregado correctamente.");
-                // Limpiar 
+                // Limpiar campos
                 TFPnombre.setText("");
                 TFPprecio.setText("");
                 TFPstock.setText("");
@@ -698,9 +765,9 @@ public class ventanaadmin extends javax.swing.JFrame {
 
             Producto productoEditado = new Producto(id, nom, precio, stock);
 
-            GestionProductos gestor = new GestionProductos();
+            GestionProductosBD gestor = new GestionProductosBD();
             if (gestor.editarProducto(productoEditado)) {
-            JOptionPane.showMessageDialog(null, "Producto editado correctamente");
+                JOptionPane.showMessageDialog(null, "Producto editado correctamente");
                 // Limpiar campos
                 TFPEid.setText("");
                 TFPEnombre.setText("");
@@ -725,7 +792,7 @@ public class ventanaadmin extends javax.swing.JFrame {
         try {
             int id = Integer.parseInt(TFIDe.getText());
 
-            GestionProductos gestor = new GestionProductos();
+            GestionProductosBD gestor = new GestionProductosBD();
             if (gestor.eliminarProducto(id)) {
                 JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
                 TFIDe.setText("");
@@ -761,19 +828,19 @@ public class ventanaadmin extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ventanaadmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ventanaadmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ventanaadmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ventanaadmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ventanaadmin().setVisible(true);
+                new VentanaAdmin().setVisible(true);
 
             }
         });
