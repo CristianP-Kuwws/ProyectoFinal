@@ -7,7 +7,7 @@ package GUI;
 import Clases.Personas.Administrador;
 import Clases.Personas.Empleado;
 import Clases.Personas.Usuario;
-import Datos.DAOS.Login;
+import Datos.DAOS.LoginUsuarioBD;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
@@ -22,16 +22,12 @@ import javax.swing.JPanel;
  * @author hazky
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
-    
+
     public VentanaPrincipal() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/justshop.jpg")).getImage());
-        //URL url = getClass().getResource("/justshop.jpg");  
-        //System.out.println("URL de la imagen: " + url);
-
     }
-    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -52,7 +48,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         campoContrasenia = new javax.swing.JPasswordField();
         jpanelIniciarSesion = new javax.swing.JPanel();
         lblbtn128 = new javax.swing.JLabel();
-        jpanelRegistrarse = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -150,16 +145,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jPanel1.add(jpanelIniciarSesion, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 380, 110, 40));
 
-        jpanelRegistrarse.setBackground(new java.awt.Color(51, 51, 51));
-        jpanelRegistrarse.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jpanelRegistrarse.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jpanelRegistrarseMouseClicked(evt);
-            }
-        });
-        jpanelRegistrarse.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel1.add(jpanelRegistrarse, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 380, -1, 40));
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -175,13 +160,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     //Campos Mouse Pressers (No tocar)
     private void campoUsuarioMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_campoUsuarioMousePressed
-        
+
         if (campoUsuario.getText().equals("Ingresa tu nombre de usuario")) {
-            
+
             campoUsuario.setText("");
             campoUsuario.setForeground(Color.black);
         }
-        
+
         if (String.valueOf(campoContrasenia.getPassword()).isEmpty()) {
             campoContrasenia.setText("********");
             campoContrasenia.setForeground(Color.gray);
@@ -189,79 +174,57 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_campoUsuarioMousePressed
 
     private void campoContraseniaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_campoContraseniaMousePressed
-        
+
         if (String.valueOf(campoContrasenia.getPassword()).equals("********")) {
             campoContrasenia.setText("");
             campoContrasenia.setForeground(Color.black);
         }
-        
+
         if (campoUsuario.getText().isEmpty()) {
             campoUsuario.setText("Ingresa tu nombre de usuario");
             campoUsuario.setForeground(Color.gray);
         }
     }//GEN-LAST:event_campoContraseniaMousePressed
-    
+
     // Funcionalidades Generales
+
     private void jpanelIniciarSesionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jpanelIniciarSesionMouseClicked
-        
+
+        // Captar datos importantes
         String nombreUsuario = campoUsuario.getText();
         char[] contraseniaArr = campoContrasenia.getPassword();
         String contrasenia = new String(contraseniaArr);
-        boolean encontrado = false; 
+        boolean encontrado = false;
 
-        
-        if (nombreUsuario.isEmpty() || contrasenia.isEmpty() ||
-            nombreUsuario.equals("Ingresa tu nombre de usuario") ||
-            contrasenia.equals("********")) {
+        // Verificar que  los datos sean correctos y no esten vacios
+        if (nombreUsuario.isEmpty() || contrasenia.isEmpty()
+                || nombreUsuario.equals("Ingresa tu nombre de usuario")
+                || contrasenia.equals("********")) {
             JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos correctamente.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
-        } 
-        
-        //Iniciar Sesion
-        
-        Login IniciarSesion = new Login();
+        }
+
+        //Crear y Llamar instancia de inicio de sesion
+        LoginUsuarioBD IniciarSesion = new LoginUsuarioBD();
         Usuario usuarioActual = IniciarSesion.login(nombreUsuario, contrasenia);
-            
-        if (usuarioActual != null) {
-            
-            if (usuarioActual instanceof Administrador) {
-                ventanaadmin ventanaAdmin = new ventanaadmin();
-                ventanaAdmin.setVisible(true);
-            } else if (usuarioActual instanceof Empleado) {
-                ventanaProductos ventanaProductos = new ventanaProductos();
-                ventanaProductos.setVisible(true);
-            }
-            setVisible(false);
-        } else {
-        JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+
+        if (usuarioActual == null) {
+            JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
         
-        
+        //La instancia de usuario se determina mediante la clase login.
+
+        System.out.println("Bienvenido: " + usuarioActual.getClass().getSimpleName());
+        JOptionPane.showMessageDialog(null, "Bienvenido: " + usuarioActual.getClass().getSimpleName());
+        usuarioActual.mostrarInterfaz();
+        dispose();
     }//GEN-LAST:event_jpanelIniciarSesionMouseClicked
-    void mostarVP(){
-    setVisible(true);
-    
+    void mostarVP() {
+        setVisible(true);
+
     }
-//No funcional.
-    private void jpanelRegistrarseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jpanelRegistrarseMouseClicked
 
-        Registro registrarUsuario = new Registro();
-        registrarUsuario.setVisible(true);
-        
-        this.setEnabled(false); // Deshabilita VentanaPrincipal pero la deja visible // posible problema?
-        //this.setVisible(false);
-        
-        registrarUsuario.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                setEnabled(true); // Vuelve a habilitar VentanaPrincipal cuando se cierre Registro
-                toFront(); // Trae la ventana al frente en caso de que quede en segundo plano
-            }
-        });
-           
-    }//GEN-LAST:event_jpanelRegistrarseMouseClicked
-
-    
     /**
      * @param args the command line arguments
      */
@@ -307,7 +270,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel jpanelIniciarSesion;
-    private javax.swing.JPanel jpanelRegistrarse;
     private javax.swing.JLabel labelContrasenia;
     private javax.swing.JLabel labelUsuario;
     private javax.swing.JLabel lblIniciarSesion;

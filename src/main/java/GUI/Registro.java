@@ -4,7 +4,7 @@
  */
 package GUI;
 
-import Datos.DAOS.RegistrarUsuario;
+import Datos.DAOS.RegistrarUsuarioBD;
 import java.awt.Color;
 import java.util.Arrays;
 import javax.swing.JOptionPane;
@@ -204,7 +204,7 @@ public class Registro extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_campoContraseniaMousePressed
-    
+
     //Funcionalidades Generales
     private void jpanelCrearUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jpanelCrearUsuarioMouseClicked
         // Conseguir info
@@ -219,10 +219,11 @@ public class Registro extends javax.swing.JFrame {
                 || correo.equals("Ingresa un correo")
                 || contraseña.equals("********")) {
             JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos correctamente.", "Error", JOptionPane.ERROR_MESSAGE);
-            return; 
+            return;
         }
 
-        RegistrarUsuario registro = new RegistrarUsuario();
+        //Instancia de RegistrarUsuario
+        RegistrarUsuarioBD registro = new RegistrarUsuarioBD();
 
         // Verificar si el correo ya existe antes de registrarlo
         if (registro.usuarioExiste(correo)) {
@@ -243,18 +244,14 @@ public class Registro extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Error al registrar usuario.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Limpiar el array
         Arrays.fill(contraseniaArr, ' ');
-
     }//GEN-LAST:event_jpanelCrearUsuarioMouseClicked
-    
+
     private void jpanelVolverAInicioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jpanelVolverAInicioMouseClicked
 
         this.dispose(); // Volver al inicio
-
     }//GEN-LAST:event_jpanelVolverAInicioMouseClicked
-    
+
     //Campo Correo Mouse Pressed (No tocar)   
     private void campoCorreoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_campoCorreoMousePressed
 
@@ -271,7 +268,7 @@ public class Registro extends javax.swing.JFrame {
             campoContrasenia.setForeground(Color.gray);
         }
     }//GEN-LAST:event_campoCorreoMousePressed
-    
+
     //Campo Usuario Mouse Pressed (No tocar)
     private void campoUsuarioMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_campoUsuarioMousePressed
         if (campoUsuario.getText().equals("Ingresa tu nombre de usuario")) {
@@ -288,7 +285,6 @@ public class Registro extends javax.swing.JFrame {
             campoContrasenia.setForeground(Color.gray);
         }
     }//GEN-LAST:event_campoUsuarioMousePressed
-    
 
     // Focus Lost para campos (No tocar)  
     private void campoUsuarioFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_campoUsuarioFocusLost
@@ -311,9 +307,10 @@ public class Registro extends javax.swing.JFrame {
             campoContrasenia.setForeground(Color.gray);
         }
     }//GEN-LAST:event_campoContraseniaFocusLost
-    void mostarVP(){
-    setVisible(true);
+    void mostarVP() {
+        setVisible(true);
     }
+
     /**
      * @param args the command line arguments
      */

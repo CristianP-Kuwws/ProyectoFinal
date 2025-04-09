@@ -38,26 +38,6 @@ public class ProyectoII {
         System.out.println("prueba de pull Eithan.");
         System.out.println("prueba de pull Eithan.");
         
-        //Para comprobar si hubo conexion con BD (Pongan su info en ConexionBD.java)
-        
-        // obtener la instancia única de ConexionBD
-        ConexionBD conexionBD = ConexionBD.getInstancia();
-
-        // obtener la conexion
-        Connection conexion = conexionBD.getConexion();
-        
-        //Comprobar. 
-        
-        if (conexion != null) {
-            System.out.println("La conexión a la base de datos es exitosa.");
-        } else {
-            System.out.println("No se pudo establecer la conexión.");
-        }
-        
-        
-        
-        
-        
         /** // Por si quieren probar la funcion de crear factura, al final de todo les dara la ruta en donde se almacena el archivo
         ArrayList<Producto> productos = new ArrayList<>();
 
