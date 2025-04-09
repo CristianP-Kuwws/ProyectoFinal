@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * @author hazky
  */
 //SOLO PARA HISTORIAL DE FACTURAS
-public class GestionFactura implements IFacturaDAO {
+public class GestionFacturaBD implements IFacturaDAO {
 
     //la fecha es automaticamente generada por la bd 
     @Override

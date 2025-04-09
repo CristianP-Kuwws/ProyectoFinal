@@ -13,7 +13,7 @@ import java.sql.SQLException;
  *
  * @author hazky
  */
-public class GestionProductos implements IProductoDAO{
+public class GestionProductosBD implements IProductoDAO{
     
     //Metodo propio de la clase
     private boolean productoExiste(String marca, Connection conexion) {
