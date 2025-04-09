@@ -160,6 +160,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         btnBuscar = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
+        jButton1 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -190,7 +191,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel1.setBackground(java.awt.SystemColor.control);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(java.awt.SystemColor.window);
+        jPanel2.setBackground(java.awt.SystemColor.textHighlightText);
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jScrollPane1.setBackground(java.awt.SystemColor.activeCaptionText);
@@ -220,7 +221,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Agregar Cantidad ");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, -1, -1));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, 110, -1));
         jPanel2.add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 240, 70, -1));
 
         jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
@@ -228,17 +229,17 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel2.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, -210, 20, 900));
 
         btnActualizarProductos.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Green"));
-        btnActualizarProductos.setForeground(new java.awt.Color(255, 255, 255));
+        btnActualizarProductos.setForeground(new java.awt.Color(0, 0, 0));
         btnActualizarProductos.setText("Actualizar ");
         btnActualizarProductos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnActualizarProductosActionPerformed(evt);
             }
         });
-        jPanel2.add(btnActualizarProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 550, 130, 30));
+        jPanel2.add(btnActualizarProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 550, 130, 30));
 
         btnagregarCantidad.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Blue"));
-        btnagregarCantidad.setForeground(new java.awt.Color(255, 255, 255));
+        btnagregarCantidad.setForeground(new java.awt.Color(0, 0, 0));
         btnagregarCantidad.setText("Confirmar");
         btnagregarCantidad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -269,6 +270,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 120, 30));
 
         btnBuscar.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.GreyInline"));
+        btnBuscar.setForeground(new java.awt.Color(255, 255, 255));
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -277,14 +279,23 @@ public class ventanaProductos extends javax.swing.JFrame {
         });
         jPanel2.add(btnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 140, 80, -1));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 3, 24)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Productos");
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 0, 140, 50));
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 0, 140, 50));
 
         jSeparator3.setForeground(new java.awt.Color(0, 0, 0));
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jPanel2.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 0, 20, 630));
+
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Cerrar sesion");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, -1, -1));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 440, 600));
 
@@ -313,7 +324,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         );
         jScrollPane2.setViewportView(jTable2);
 
-        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 310, 370));
+        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 320, 370));
 
         btnEliminar.setBackground(new java.awt.Color(255, 204, 153));
         btnEliminar.setForeground(new java.awt.Color(0, 0, 0));
@@ -328,7 +339,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Limpiar Carrito");
-        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 420, -1, -1));
+        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 420, -1, 20));
         jPanel3.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 210, 110, -1));
 
         jLabel6.setBackground(new java.awt.Color(0, 0, 0));
@@ -345,7 +356,7 @@ public class ventanaProductos extends javax.swing.JFrame {
                 btnPagarActionPerformed(evt);
             }
         });
-        jPanel3.add(btnPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 560, 90, 30));
+        jPanel3.add(btnPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 560, 90, 30));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
@@ -353,14 +364,14 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 130, -1));
 
         btnEliminarCantidad.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Blue"));
-        btnEliminarCantidad.setForeground(new java.awt.Color(255, 255, 255));
+        btnEliminarCantidad.setForeground(new java.awt.Color(0, 0, 0));
         btnEliminarCantidad.setText("Confirmar");
         btnEliminarCantidad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarCantidadActionPerformed(evt);
             }
         });
-        jPanel3.add(btnEliminarCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 250, -1, -1));
+        jPanel3.add(btnEliminarCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 240, -1, -1));
 
         btnLimpiar.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Red"));
         btnLimpiar.setForeground(new java.awt.Color(0, 0, 0));
@@ -370,17 +381,17 @@ public class ventanaProductos extends javax.swing.JFrame {
                 btnLimpiarActionPerformed(evt);
             }
         });
-        jPanel3.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 450, 80, 30));
+        jPanel3.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 440, 80, 30));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("Eliminar Producto ");
-        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 320, 110, 20));
+        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 330, 110, 20));
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel10.setText("Datos Relevantes");
-        jPanel3.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 10, 230, 30));
+        jLabel10.setText("Datos Relevantes :");
+        jPanel3.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 230, 30));
 
         jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
         jPanel3.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 140, 460, 10));
@@ -400,16 +411,19 @@ public class ventanaProductos extends javax.swing.JFrame {
                 txtNombreClienteActionPerformed(evt);
             }
         });
-        jPanel3.add(txtNombreCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 60, 170, -1));
+        jPanel3.add(txtNombreCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 60, 170, -1));
 
         txtCedula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCedulaActionPerformed(evt);
             }
         });
-        jPanel3.add(txtCedula, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 180, -1));
+        jPanel3.add(txtCedula, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 100, 190, -1));
+
+        lblPagar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jPanel3.add(lblPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 560, 190, 30));
 
+        btnInfoCliente.setForeground(new java.awt.Color(255, 255, 255));
         btnInfoCliente.setText("Enviar");
         btnInfoCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -534,6 +548,8 @@ public class ventanaProductos extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "No se encontro el archivo generado.", "Error", JOptionPane.ERROR_MESSAGE);
         }
         limpiarCampos();//este es el que usamos para limpiar despues de la factura.
+        actualizarTotal();
+        
 
     } catch (Exception ex) {
         ex.printStackTrace();
@@ -912,6 +928,10 @@ public class ventanaProductos extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnActualizarProductosActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     
   
     /**
@@ -960,6 +980,7 @@ public class ventanaProductos extends javax.swing.JFrame {
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnPagar;
     private javax.swing.JButton btnagregarCantidad;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
