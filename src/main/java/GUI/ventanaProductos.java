@@ -562,7 +562,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         
         if (conn != null) {
             try {
-                String sql = "SELECT marca, precio FROM productos";
+                String sql = "SELECT marca, precio, stock FROM productos";
                 
                 if (!busqueda.isEmpty()) {
                     
@@ -593,8 +593,9 @@ public class ventanaProductos extends javax.swing.JFrame {
                 while (rs.next()) {
                     String marca = rs.getString("marca");
                     double precio = rs.getDouble("precio");
+                    int stock = rs.getInt("stock");
                     
-                    modelo.addRow(new Object[]{marca, precio});
+                    modelo.addRow(new Object[]{marca, precio , stock});
             }
                 rs.close();
                 stmt.close();
@@ -753,7 +754,7 @@ public class ventanaProductos extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error al actualizar el stock en la base de datos.");
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Error de conexion a la base de datos.");
+            JOptionPane.showMessageDialog(this, "Error de conexin a la base de datos.");
         }
 
     } else {
@@ -942,6 +943,7 @@ public class ventanaProductos extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new ventanaProductos().setVisible(true);
             }
