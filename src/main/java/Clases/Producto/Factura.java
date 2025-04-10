@@ -1,6 +1,7 @@
 package Clases.Producto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -12,11 +13,13 @@ public class Factura implements Calculos {
     private int idFactura;
     private int idEmpleado;
     private ArrayList<Producto> listaProductos;
-    
+    private LocalDate fecha;
+
     public Factura(int idFactura, int idEmpleado) {
         this.idFactura = idFactura;
         this.idEmpleado = idEmpleado;
         listaProductos = new ArrayList();
+        this.fecha = LocalDate.now(); 
     }
     
     //Metodos basicos
@@ -33,6 +36,10 @@ public class Factura implements Calculos {
         return listaProductos;
     }
     
+    public LocalDate getFecha() {
+        return fecha;
+    }
+    
     //Metodos de Interface
 
     @Override
@@ -44,7 +51,8 @@ public class Factura implements Calculos {
     public BigDecimal calculoSubtotal() {
         BigDecimal subtotal = BigDecimal.ZERO;
         for (Producto productoInd : listaProductos) {
-            subtotal = subtotal.add(productoInd.getPrecio());
+            BigDecimal totalPorProducto = productoInd.getPrecio().multiply(BigDecimal.valueOf(productoInd.getCantidadSeleccionada()));
+            subtotal = subtotal.add(totalPorProducto);
         }
         return subtotal;
     }
@@ -56,8 +64,8 @@ public class Factura implements Calculos {
         return itbis;
     }
     
-    public void exportarComoPDF(String nombreArchivo, int idCliente) {
-    GenerarFactura.generarFacturaPDF(nombreArchivo, idFactura, idCliente, listaProductos, calculoSubtotal(), calculoITBIS(), calculoTotal());
+    public void exportarComoPDF(String nombreArchivo, String cedulaCliente, String nombreCliente) {
+    GenerarFactura.generarFacturaPDF(nombreArchivo, nombreCliente, idFactura, cedulaCliente, listaProductos, idEmpleado, calculoSubtotal(), calculoITBIS(), calculoTotal());
     }
   
 }

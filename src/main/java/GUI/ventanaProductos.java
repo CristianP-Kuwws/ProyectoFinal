@@ -1,9 +1,13 @@
 package GUI;
 
+import Clases.Personas.Empleado;
+import Clases.Personas.Usuario;
 import Clases.Producto.Factura;
 import Clases.Producto.GenerarFactura;
 import Clases.Producto.Producto;
 import Datos.ConexionBD;
+import Datos.DAOS.GestionFacturaBD;
+import Datos.SesionActual;
 import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -19,127 +23,115 @@ import javax.swing.table.DefaultTableModel;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author Eithan
  */
 public class ventanaProductos extends javax.swing.JFrame {
-    
-    
+
     //variables para manejar los productos 
     private String productoSeleccionado = "";
     private double precioSeleccionado = 0;
     private int cantidadSeleccionada = 0;
-    
+
     /**
      * Creates new form ventanaProductos
      */
     public ventanaProductos() {
-        initComponents();  
+        initComponents();
+        this.setLocationRelativeTo(null);
         cargarProductos();
-    }
-    
-    
-    private void actualizarTablaProductos() {
         
-    // actualiza la tabla de productos .(la cantidad) 
-    
-    DefaultTableModel modeloProductos = (DefaultTableModel) jTable1.getModel();
-    for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-       
-        String producto = (String) modeloProductos.getValueAt(i, 0);  
+    }
+
+    private void actualizarTablaProductos() {
+
+        // actualiza la tabla de productos .(la cantidad) 
+        DefaultTableModel modeloProductos = (DefaultTableModel) jTable1.getModel();
+        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+
+            String producto = (String) modeloProductos.getValueAt(i, 0);
+            Connection conn = ConexionBD.getInstancia().getConexion();
+
+            if (conn != null) {
+                try {
+
+                    String sql = "SELECT stock FROM productos WHERE marca = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+                    pstmt.setString(1, producto);
+                    ResultSet rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        int stock = rs.getInt("stock");
+                        modeloProductos.setValueAt(stock, i, 2);  // Actualizamos la columna de stock
+                    }
+                    pstmt.close();
+                    rs.close();
+                    conn.close();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    //aqui se van a cargar los productos de la base de datos.  la marca y el precio y stock.  
+    private void cargarProductos() {
+
+        DefaultTableModel modeloProductos = (DefaultTableModel) jTable1.getModel();
+        modeloProductos.setRowCount(0);
+
         Connection conn = ConexionBD.getInstancia().getConexion();
-   
+
         if (conn != null) {
             try {
-                
-                String sql = "SELECT stock FROM productos WHERE marca = ?";
+
+                String sql = "SELECT marca, precio, stock FROM productos"; // SOLO las columnas necesarias
                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, producto);
                 ResultSet rs = pstmt.executeQuery();
-                
-                if (rs.next()) {
+
+                while (rs.next()) {
+                    String nombre = rs.getString("marca");
+                    double precio = rs.getDouble("precio");
                     int stock = rs.getInt("stock");
-                    modeloProductos.setValueAt(stock, i, 2);  // Actualizamos la columna de stock
+
+                    Object[] fila = {nombre, precio, stock};
+                    modeloProductos.addRow(fila);
                 }
-                pstmt.close();
+
                 rs.close();
-                conn.close();
-                
-            } catch (SQLException e) {
-                e.printStackTrace();
+                pstmt.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
         }
     }
-}
 
-   
-    //aqui se van a cargar los productos de la base de datos.  la marca y el precio y stock.  
-    
-    private void cargarProductos() {
-        
-   DefaultTableModel modeloProductos = (DefaultTableModel) jTable1.getModel();
-    modeloProductos.setRowCount(0); 
-
-    Connection conn = ConexionBD.getInstancia().getConexion();
-
-    if (conn != null) {
-        try {
-            
-            String sql = "SELECT marca, precio, stock FROM productos"; // SOLO las columnas necesarias
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String nombre = rs.getString("marca");
-                double precio = rs.getDouble("precio");
-                int stock = rs.getInt("stock");
-
-                Object[] fila = { nombre, precio, stock };
-                modeloProductos.addRow(fila);
-            }
-
-            rs.close();
-            pstmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-}
-    
     //Este metodo se usa ya despues de hacer el proceso de pago con la factura . para limpiar todo los campos. 
-    
     private void limpiarCampos() {
-   
-    txtNombreCliente.setText("");
-    txtCedula.setText("");
 
-    
-    DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-    model.setRowCount(0); 
+        txtNombreCliente.setText("");
+        txtCedula.setText("");
+
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        model.setRowCount(0);
     }
-   
-    
+
     // para actualizar la tabla cada vez que le agregemos un productto se actualice  el total
-    
     private void actualizarTotal() {
-    double total = 0;
-    DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
-    
-    for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
-        total += (double) modeloCarrito.getValueAt(i, 3); 
+        double total = 0;
+        DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+
+        for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+            total += (double) modeloCarrito.getValueAt(i, 3);
+        }
+
+        lblPagar.setText("Total a Pagar: $" + total);
     }
-    
-    lblPagar.setText("Total a Pagar: $" + total);
-}
-    
-    
-    
+
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -219,24 +211,24 @@ public class ventanaProductos extends javax.swing.JFrame {
 
         jLabel4.setBackground(new java.awt.Color(0, 0, 0));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel4.setForeground(new java.awt.Color(111, 162, 195));
         jLabel4.setText("Agregar Cantidad ");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 210, 110, -1));
-        jPanel2.add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 240, 70, -1));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 210, 110, -1));
+        jPanel2.add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 240, 70, -1));
 
         jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jPanel2.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, -210, 20, 900));
 
-        btnActualizarProductos.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Green"));
-        btnActualizarProductos.setForeground(new java.awt.Color(0, 0, 0));
+        btnActualizarProductos.setBackground(new java.awt.Color(127, 139, 145));
+        btnActualizarProductos.setForeground(new java.awt.Color(255, 255, 255));
         btnActualizarProductos.setText("Actualizar ");
         btnActualizarProductos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnActualizarProductosActionPerformed(evt);
             }
         });
-        jPanel2.add(btnActualizarProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 550, 130, 30));
+        jPanel2.add(btnActualizarProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 130, 30));
 
         btnagregarCantidad.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Blue"));
         btnagregarCantidad.setForeground(new java.awt.Color(0, 0, 0));
@@ -262,12 +254,12 @@ public class ventanaProductos extends javax.swing.JFrame {
                 boxFiltrarActionPerformed(evt);
             }
         });
-        jPanel2.add(boxFiltrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 120, 30));
+        jPanel2.add(boxFiltrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 80, 120, 30));
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(111, 162, 195));
         jLabel9.setText("Filtrar Productos  :");
-        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 120, 30));
+        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 150, 30));
 
         btnBuscar.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.GreyInline"));
         btnBuscar.setForeground(new java.awt.Color(255, 255, 255));
@@ -280,16 +272,17 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel2.add(btnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 140, 80, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setForeground(new java.awt.Color(111, 162, 195));
         jLabel3.setText("Productos");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 0, 140, 50));
 
-        jSeparator3.setForeground(new java.awt.Color(0, 0, 0));
+        jSeparator3.setForeground(new java.awt.Color(111, 162, 195));
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jPanel2.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 0, 20, 630));
 
+        jButton1.setBackground(new java.awt.Color(127, 139, 145));
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Cerrar sesion");
+        jButton1.setText("Cerrar Sesion");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -303,9 +296,9 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 3, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setForeground(new java.awt.Color(111, 162, 195));
         jLabel1.setText("Carrito");
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 90, 30));
+        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 90, 30));
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -334,19 +327,19 @@ public class ventanaProductos extends javax.swing.JFrame {
                 btnEliminarActionPerformed(evt);
             }
         });
-        jPanel3.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 350, 80, -1));
+        jPanel3.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 350, 80, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel5.setForeground(new java.awt.Color(111, 162, 195));
         jLabel5.setText("Limpiar Carrito");
-        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 420, -1, 20));
-        jPanel3.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 210, 110, -1));
+        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 410, -1, 20));
+        jPanel3.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 206, 100, 30));
 
         jLabel6.setBackground(new java.awt.Color(0, 0, 0));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel6.setForeground(new java.awt.Color(111, 162, 195));
         jLabel6.setText("Eliminar Cantidad ");
-        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 190, 110, 20));
+        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 180, 110, 20));
 
         btnPagar.setBackground(new java.awt.Color(0, 102, 0));
         btnPagar.setForeground(new java.awt.Color(255, 255, 255));
@@ -359,7 +352,7 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel3.add(btnPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 560, 90, 30));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel7.setForeground(new java.awt.Color(111, 162, 195));
         jLabel7.setText("Total a Pagar :");
         jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 130, -1));
 
@@ -371,7 +364,7 @@ public class ventanaProductos extends javax.swing.JFrame {
                 btnEliminarCantidadActionPerformed(evt);
             }
         });
-        jPanel3.add(btnEliminarCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 240, -1, -1));
+        jPanel3.add(btnEliminarCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 250, -1, -1));
 
         btnLimpiar.setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Red"));
         btnLimpiar.setForeground(new java.awt.Color(0, 0, 0));
@@ -384,25 +377,25 @@ public class ventanaProductos extends javax.swing.JFrame {
         jPanel3.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 440, 80, 30));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel8.setForeground(new java.awt.Color(111, 162, 195));
         jLabel8.setText("Eliminar Producto ");
-        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 330, 110, 20));
+        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 320, 110, 20));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel10.setForeground(new java.awt.Color(111, 162, 195));
         jLabel10.setText("Datos Relevantes :");
         jPanel3.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 230, 30));
 
-        jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel3.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 140, 460, 10));
+        jSeparator2.setForeground(new java.awt.Color(111, 162, 195));
+        jPanel3.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 140, 420, 10));
 
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 2, 14)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(111, 162, 195));
         jLabel11.setText("Nombre del Ciente:");
-        jPanel3.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 120, 30));
+        jPanel3.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 150, 30));
 
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 2, 14)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(111, 162, 195));
         jLabel12.setText("Cedula:");
         jPanel3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 50, 30));
 
@@ -411,7 +404,7 @@ public class ventanaProductos extends javax.swing.JFrame {
                 txtNombreClienteActionPerformed(evt);
             }
         });
-        jPanel3.add(txtNombreCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 60, 170, -1));
+        jPanel3.add(txtNombreCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 60, 170, -1));
 
         txtCedula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -423,14 +416,15 @@ public class ventanaProductos extends javax.swing.JFrame {
         lblPagar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jPanel3.add(lblPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 560, 190, 30));
 
+        btnInfoCliente.setBackground(new java.awt.Color(127, 139, 145));
         btnInfoCliente.setForeground(new java.awt.Color(255, 255, 255));
-        btnInfoCliente.setText("Enviar");
+        btnInfoCliente.setText("Validar");
         btnInfoCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnInfoClienteActionPerformed(evt);
             }
         });
-        jPanel3.add(btnInfoCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, -1, -1));
+        jPanel3.add(btnInfoCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, 80, -1));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 0, 450, 600));
 
@@ -446,116 +440,140 @@ public class ventanaProductos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-  
     //Eliminar un producto desde el carrito . Este se le sumara a la tabla prodcuto. osea que volvera a su origen
-    
+
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
-        
-     int row = jTable2.getSelectedRow(); 
-    
-    if (row != -1) {
-        DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
-        
-        String producto = (String) modeloCarrito.getValueAt(row, 0);
-        int cantidad = (int) modeloCarrito.getValueAt(row, 2);
-        
-        Connection conn = ConexionBD.getInstancia().getConexion();
-        
-        if (conn != null) {
-            try {
-                String sqlUpdate = "UPDATE productos SET stock = stock + ? WHERE marca = ?";
-                PreparedStatement pstmt = conn.prepareStatement(sqlUpdate);
-                pstmt.setInt(1, cantidad);
-                pstmt.setString(2, producto);
-                pstmt.executeUpdate();
-                pstmt.close();
-                
-                // Eliminamos  del carrito
-                modeloCarrito.removeRow(row);
-                actualizarTotal();
-                
-                JOptionPane.showMessageDialog(this, "Producto eliminado del carrito y stock actualizado correctamente.");
-                
-                cargarProductos(); // lo usamos  para recargar la tabla de productos 
-                
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al actualizar el stock: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+        int row = jTable2.getSelectedRow();
+
+        if (row != -1) {
+            DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+
+            String producto = (String) modeloCarrito.getValueAt(row, 0);
+            int cantidad = (int) modeloCarrito.getValueAt(row, 2);
+
+            Connection conn = ConexionBD.getInstancia().getConexion();
+
+            if (conn != null) {
+                try {
+                    String sqlUpdate = "UPDATE productos SET stock = stock + ? WHERE marca = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(sqlUpdate);
+                    pstmt.setInt(1, cantidad);
+                    pstmt.setString(2, producto);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+
+                    // Eliminamos  del carrito
+                    modeloCarrito.removeRow(row);
+                    actualizarTotal();
+
+                    JOptionPane.showMessageDialog(this, "Producto eliminado del carrito y stock actualizado correctamente.");
+
+                    cargarProductos(); // lo usamos  para recargar la tabla de productos 
+
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al actualizar el stock: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "No hay conexion a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "No hay conexion a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para eliminar.");
         }
-    } else {
-        JOptionPane.showMessageDialog(this, "Seleccione un producto para eliminar.");
-    }
-    
-     
+
+
     }//GEN-LAST:event_btnEliminarActionPerformed
 
-    
-    
-    
+
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-       try {
-           
-        //   antes de nada obtenemos  los datos del cliente y hacemos que sea obligatorio para ir a pagar 
-        String nombreCliente = txtNombreCliente.getText(); 
-        String cedulaCliente = txtCedula.getText(); 
+        try {
+            // 1. Validar los datos del cliente
+            String nombreCliente = txtNombreCliente.getText();
+            String nombreClientePDF = txtNombreCliente.getText();
 
-        if (nombreCliente.isEmpty() || cedulaCliente.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe completar los datos del cliente.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            String cedulaCliente = txtCedula.getText();
+
+            if (nombreCliente.isEmpty() || cedulaCliente.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debe completar los datos del cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 2. Obtener productos del carrito
+            ArrayList<Producto> productos = new ArrayList<>();
+            int rowCount = jTable2.getRowCount();
+            if (rowCount == 0) {
+                JOptionPane.showMessageDialog(this, "El carrito está vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            for (int i = 0; i < rowCount; i++) {
+                String marca = (String) jTable2.getValueAt(i, 0);
+                BigDecimal precio = new BigDecimal(jTable2.getValueAt(i, 1).toString());
+                int cantidadSeleccionada = (int) jTable2.getValueAt(i, 2);  // Aseguramos que la cantidad seleccionada se obtiene aquí
+
+                // Crear el objeto Producto con la cantidad seleccionada
+                Producto producto = new Producto(0, marca, precio, 0, cantidadSeleccionada);
+                productos.add(producto);
+            }
+
+            // 3. Obtener el empleado actual
+            Usuario usuario = SesionActual.getUsuarioActual();
+            int idEmpleado = 0;
+            if (usuario instanceof Empleado) {
+                idEmpleado = ((Empleado) usuario).getIdEmpleado();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al momento de obtener el ID del empleado.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 4. Calcular totales antes de insertar
+            Factura facturaTemp = new Factura(0, idEmpleado);
+            facturaTemp.getListaProductos().addAll(productos);
+            BigDecimal subtotal = facturaTemp.calculoSubtotal();
+            BigDecimal itbis = facturaTemp.calculoITBIS();
+            BigDecimal total = facturaTemp.calculoTotal();
+
+            // 5. Insertar en la BD y obtener el idFactura generado
+            GestionFacturaBD gestorFactura = new GestionFacturaBD();
+            Integer idFacturaGenerada = gestorFactura.agregarFacturaYObtenerID(idEmpleado, total, subtotal, itbis, cedulaCliente);
+
+            if (idFacturaGenerada == null) {
+                JOptionPane.showMessageDialog(this, "No se pudo registrar la factura en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 6. Crear objeto Factura con ID real
+            Factura factura = new Factura(idFacturaGenerada, idEmpleado);
+            factura.getListaProductos().addAll(productos);
+
+            // 7. Generar PDF
+            String nombreArchivo = "Factura_" + nombreCliente.replace(" ", "_") + ".pdf";
+            File archivo = new File(nombreArchivo);
+
+            factura.exportarComoPDF(
+                    archivo.getAbsolutePath(),
+                    cedulaCliente,
+                    nombreClientePDF
+            );
+
+            // 8. Abrir el PDF
+            if (archivo.exists()) {
+                java.awt.Desktop.getDesktop().open(archivo);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontró el archivo generado.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // 9. Limpiar
+            limpiarCampos();
+            actualizarTotal();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al generar la factura: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        //  los productos del carrito
-        ArrayList<Producto> productos = new ArrayList<>();
-        int rowCount = jTable2.getRowCount();
-        if (rowCount == 0) {
-            JOptionPane.showMessageDialog(this, "El carrito esta vacio.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        for (int i = 0; i < rowCount; i++) {
-            String marca = (String) jTable2.getValueAt(i, 0); //  Producto
-            BigDecimal precio = new BigDecimal(jTable2.getValueAt(i, 1).toString()); // Precio
-            int cantidad = (int) jTable2.getValueAt(i, 2); // Cantidad
 
-            Producto producto = new Producto(0, marca, precio, cantidad);
-            
-            productos.add(producto);
-        }
-
-        // creamos  la factura
-        Factura factura = new Factura(1001, 10); 
-        factura.getListaProductos().addAll(productos);
-
-       
-        BigDecimal subtotal = factura.calculoSubtotal();
-        BigDecimal itbis = factura.calculoITBIS();
-        BigDecimal total = factura.calculoTotal();
-
-        // PDF
-        String nombreArchivo = "Factura_" + nombreCliente.replace(" ", "_") + ".pdf";
-        File archivo = new File(nombreArchivo);
-
-        GenerarFactura.generarFacturaPDF(archivo.getAbsolutePath(), factura.getIdFactura(), Integer.parseInt(cedulaCliente), productos, subtotal, itbis, total);
-
-        // Abrir  el PDF
-        if (archivo.exists()) {
-            java.awt.Desktop.getDesktop().open(archivo);
-        } else {
-            JOptionPane.showMessageDialog(this, "No se encontro el archivo generado.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        limpiarCampos();//este es el que usamos para limpiar despues de la factura.
-        actualizarTotal();
-        
-
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Ocurrio un error al generar la factura: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-                                      
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
@@ -566,117 +584,112 @@ public class ventanaProductos extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_boxFiltrarActionPerformed
 
-    
-    
+
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         // TODO add your handling code here:
-        
+
         String filtro = boxFiltrar.getSelectedItem().toString();
         String busqueda = txtBuscador.getText();
-        
+
         Connection conn = ConexionBD.getInstancia().getConexion();
-        
+
         if (conn != null) {
             try {
                 String sql = "SELECT marca, precio, stock FROM productos";
-                
+
                 if (!busqueda.isEmpty()) {
-                    
+
                     if (filtro.equals("Nombre")) {
                         sql += " WHERE marca LIKE '%" + busqueda + "%'";
-                    
-                    
+
                     } else if (filtro.equals("Precio Unitario")) {
                         try {
-                            
+
                             double precioBuscado = Double.parseDouble(busqueda);
                             sql += " WHERE precio = " + precioBuscado;
-                        
+
                         } catch (NumberFormatException e) {
-                            
+
                             JOptionPane.showMessageDialog(this, "El precio debe ser un numero.");
                             return;
+                        }
                     }
                 }
-            }
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
                 DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
-                
+
                 modelo.setRowCount(0);
-                
 
                 while (rs.next()) {
                     String marca = rs.getString("marca");
                     double precio = rs.getDouble("precio");
                     int stock = rs.getInt("stock");
-                    
-                    modelo.addRow(new Object[]{marca, precio , stock});
-            }
+
+                    modelo.addRow(new Object[]{marca, precio, stock});
+                }
                 rs.close();
                 stmt.close();
                 conn.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            
+
             }
-        
+
         } else {
             JOptionPane.showMessageDialog(this, "Error de conexion a la base de datos.");
         }
 
     }//GEN-LAST:event_btnBuscarActionPerformed
 
-    
     //boton para limpiar la tala producto 
-    
+
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         // TODO add your handling code here:
-        
-     DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
-    
-    Connection conn = ConexionBD.getInstancia().getConexion();
-    
-    if (conn != null) {
-        try {
-            conn.setAutoCommit(false); 
-            
-            for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
-                
-                String producto = (String) modeloCarrito.getValueAt(i, 0);
-                int cantidad = (int) modeloCarrito.getValueAt(i, 2);
-                
-                String sqlUpdate = "UPDATE productos SET stock = stock + ? WHERE marca = ?";
-                PreparedStatement pstmt = conn.prepareStatement(sqlUpdate);
-                pstmt.setInt(1, cantidad);
-                pstmt.setString(2, producto);
-                pstmt.executeUpdate();
-                pstmt.close();
+
+        DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+
+        Connection conn = ConexionBD.getInstancia().getConexion();
+
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(false);
+
+                for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+
+                    String producto = (String) modeloCarrito.getValueAt(i, 0);
+                    int cantidad = (int) modeloCarrito.getValueAt(i, 2);
+
+                    String sqlUpdate = "UPDATE productos SET stock = stock + ? WHERE marca = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(sqlUpdate);
+                    pstmt.setInt(1, cantidad);
+                    pstmt.setString(2, producto);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                }
+
+                conn.commit();
+                modeloCarrito.setRowCount(0);
+                actualizarTotal();
+                JOptionPane.showMessageDialog(this, "Carrito vaciado y stock actualizado correctamente.");
+
+                cargarProductos();
+
+            } catch (SQLException ex) {
+                try {
+                    conn.rollback();
+
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+                JOptionPane.showMessageDialog(this, "Error al actualizar el stock: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-            
-            conn.commit(); 
-            modeloCarrito.setRowCount(0); 
-            actualizarTotal();
-            JOptionPane.showMessageDialog(this, "Carrito vaciado y stock actualizado correctamente.");
-            
-            cargarProductos(); 
-           
-             } catch (SQLException ex) {                
-                 try {
-                     conn.rollback(); 
-            
-                 } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
-                 }
-                 JOptionPane.showMessageDialog(this, "Error al actualizar el stock: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);            
-             }
-    } else {
-        JOptionPane.showMessageDialog(this, "No hay conexion a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
+        } else {
+            JOptionPane.showMessageDialog(this, "No hay conexion a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
-    
-    
+
     private void txtNombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreClienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombreClienteActionPerformed
@@ -684,256 +697,244 @@ public class ventanaProductos extends javax.swing.JFrame {
     private void txtCedulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCedulaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCedulaActionPerformed
-  
-    
-    
-    
+
+
     private void btnagregarCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnagregarCantidadActionPerformed
         // TODO add your handling code here:
-        
-       int row = jTable1.getSelectedRow();  // tabla de productos 
-       
-       if (row != -1) {
-        productoSeleccionado = jTable1.getValueAt(row, 0).toString();  //--- Nombre del producto
-        precioSeleccionado = Double.parseDouble(jTable1.getValueAt(row, 1).toString());  //---- Precio del producto
-        int stockDisponible = Integer.parseInt(jTable1.getValueAt(row, 2).toString());  //----- Stock disponible
-        
-        int cantidad = Integer.parseInt(jSpinner2.getValue().toString());  // Esta es la cantidad  desde el spinner
-        
-        if (cantidad <= 0) {
-            JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a cero.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (cantidad > stockDisponible) {
-            JOptionPane.showMessageDialog(this, "No puedes seleccionar mas unidades de las disponibles. Stock: " + stockDisponible, "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
-        // variable para guardar la cantidad
-        cantidadSeleccionada = cantidad;
-        
-        //  Actualizar en la base de datos 
-        Connection conn = ConexionBD.getInstancia().getConexion();
-        if (conn != null) {
-            try {
-                // Actualizar el stock en la base de datos
-                String sql = "UPDATE productos SET stock = ? WHERE marca = ?";
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                int nuevoStock = stockDisponible - cantidad;
-                pstmt.setInt(1, nuevoStock);
-                pstmt.setString(2, productoSeleccionado);
-                pstmt.executeUpdate();
-                
-                pstmt.close();
-                
+        int row = jTable1.getSelectedRow();  // tabla de productos 
 
-                // --- Actualizar en la tabla visual (tabla de productos) --- 
-                jTable1.setValueAt(nuevoStock, row, 2);
+        if (row != -1) {
+            productoSeleccionado = jTable1.getValueAt(row, 0).toString();  //--- Nombre del producto
+            precioSeleccionado = Double.parseDouble(jTable1.getValueAt(row, 1).toString());  //---- Precio del producto
+            int stockDisponible = Integer.parseInt(jTable1.getValueAt(row, 2).toString());  //----- Stock disponible
 
-                // --- Agregar el producto al carrito --- 
-                DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
-                double subtotal = precioSeleccionado * cantidadSeleccionada;
-                
-                boolean productoExistente = false;
-                
-                // Verificar si el producto ya existe en el carrito
-                
-                for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
-                   
-                    if (modeloCarrito.getValueAt(i, 0).equals(productoSeleccionado)) {
-                        int cantidadExistente = (int) modeloCarrito.getValueAt(i, 2);
-                        modeloCarrito.setValueAt(cantidadExistente + cantidadSeleccionada, i, 2);
-                        modeloCarrito.setValueAt((cantidadExistente + cantidadSeleccionada) * precioSeleccionado, i, 3);
-                        productoExistente = true;
-                        break;
-                    }
-                }
-                
-                // Si el producto no esta en el carrito, agregarlo
-                if (!productoExistente) {
-                    modeloCarrito.addRow(new Object[]{productoSeleccionado, precioSeleccionado, cantidadSeleccionada, subtotal});
-                }
+            int cantidad = Integer.parseInt(jSpinner2.getValue().toString());  // Esta es la cantidad  desde el spinner
 
-                // Actualizar el total del carrito
-                actualizarTotal();
-                
-
-                // Limpiar la seleccion de producto y cantidad
-                productoSeleccionado = "";
-                precioSeleccionado = 0;
-                cantidadSeleccionada = 0;
-
-                JOptionPane.showMessageDialog(this, "Producto agregado al carrito correctamente.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error al actualizar el stock en la base de datos.");
+            if (cantidad <= 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a cero.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Error de conexin a la base de datos.");
-        }
 
-    } else {
-        JOptionPane.showMessageDialog(this, "Seleccione un producto primero.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-    }
+            if (cantidad > stockDisponible) {
+                JOptionPane.showMessageDialog(this, "No puedes seleccionar mas unidades de las disponibles. Stock: " + stockDisponible, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // variable para guardar la cantidad
+            cantidadSeleccionada = cantidad;
+
+            //  Actualizar en la base de datos 
+            Connection conn = ConexionBD.getInstancia().getConexion();
+            if (conn != null) {
+                try {
+                    // Actualizar el stock en la base de datos
+                    String sql = "UPDATE productos SET stock = ? WHERE marca = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+                    int nuevoStock = stockDisponible - cantidad;
+                    pstmt.setInt(1, nuevoStock);
+                    pstmt.setString(2, productoSeleccionado);
+                    pstmt.executeUpdate();
+
+                    pstmt.close();
+
+                    // --- Actualizar en la tabla visual (tabla de productos) --- 
+                    jTable1.setValueAt(nuevoStock, row, 2);
+
+                    // --- Agregar el producto al carrito --- 
+                    DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+                    double subtotal = precioSeleccionado * cantidadSeleccionada;
+
+                    boolean productoExistente = false;
+
+                    // Verificar si el producto ya existe en el carrito
+                    for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+
+                        if (modeloCarrito.getValueAt(i, 0).equals(productoSeleccionado)) {
+                            int cantidadExistente = (int) modeloCarrito.getValueAt(i, 2);
+                            modeloCarrito.setValueAt(cantidadExistente + cantidadSeleccionada, i, 2);
+                            modeloCarrito.setValueAt((cantidadExistente + cantidadSeleccionada) * precioSeleccionado, i, 3);
+                            productoExistente = true;
+                            break;
+                        }
+                    }
+
+                    // Si el producto no esta en el carrito, agregarlo
+                    if (!productoExistente) {
+                        modeloCarrito.addRow(new Object[]{productoSeleccionado, precioSeleccionado, cantidadSeleccionada, subtotal});
+                    }
+
+                    // Actualizar el total del carrito
+                    actualizarTotal();
+
+                    // Limpiar la seleccion de producto y cantidad
+                    productoSeleccionado = "";
+                    precioSeleccionado = 0;
+                    cantidadSeleccionada = 0;
+
+                    JOptionPane.showMessageDialog(this, "Producto agregado al carrito correctamente.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error al actualizar el stock en la base de datos.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error de conexin a la base de datos.");
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto primero.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
 
     }//GEN-LAST:event_btnagregarCantidadActionPerformed
 
-  
-    
+
     private void btnEliminarCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCantidadActionPerformed
-    // TODO add your handling code here:
-    
-    
-   //  tabla del carrito
-    int row = jTable2.getSelectedRow();
+        // TODO add your handling code here:
 
-    if (row != -1) {
-        // Obtener la cantidad actual del carrito y la cantidad a eliminar
-        int cantidadActual = (int) jTable2.getValueAt(row, 2); 
-        int cantidadEliminar = (int) jSpinner1.getValue(); 
+        //  tabla del carrito
+        int row = jTable2.getSelectedRow();
 
-        //  si la cantidad es negativa
-        if (cantidadEliminar < 0) {
-            JOptionPane.showMessageDialog(this, "No se puede eliminar una cantidad negativa. Accion no valida.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;  
-        }
+        if (row != -1) {
+            // Obtener la cantidad actual del carrito y la cantidad a eliminar
+            int cantidadActual = (int) jTable2.getValueAt(row, 2);
+            int cantidadEliminar = (int) jSpinner1.getValue();
 
-        //  si la cantidad a eliminar es mayor que la cantidad disponible en el carrito
-        if (cantidadEliminar > cantidadActual) {
-            JOptionPane.showMessageDialog(this, "No puedes eliminar mas de la cantidad disponible en el carrito.", "Cantidad excedida", JOptionPane.ERROR_MESSAGE);
-            return;  
-        }
+            //  si la cantidad es negativa
+            if (cantidadEliminar < 0) {
+                JOptionPane.showMessageDialog(this, "No se puede eliminar una cantidad negativa. Accion no valida.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        //  la cantidad restante en el carrito despues de la eliminacion
-        int cantidadRestante = cantidadActual - cantidadEliminar;
-        
-      
-        String producto = (String) jTable2.getValueAt(row, 0); 
+            //  si la cantidad a eliminar es mayor que la cantidad disponible en el carrito
+            if (cantidadEliminar > cantidadActual) {
+                JOptionPane.showMessageDialog(this, "No puedes eliminar mas de la cantidad disponible en el carrito.", "Cantidad excedida", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        // Conectar con la base de datos para actualizar el stock
-        Connection conn = ConexionBD.getInstancia().getConexion();
-        if (conn != null) {
-            try {
-                // Verificar el stock actual del producto en la base de datos
-                String sqlCheck = "SELECT stock FROM productos WHERE marca = ?";
-                PreparedStatement pstmtCheck = conn.prepareStatement(sqlCheck);
-                pstmtCheck.setString(1, producto);
-                ResultSet rsCheck = pstmtCheck.executeQuery();
-                
-                if (rsCheck.next()) {
-                    int stockActual = rsCheck.getInt("stock");
-                    
-                    // Sumar la cantidad eliminada al stock (es decir, devolverla al stock)
-                    int nuevoStock = stockActual + cantidadEliminar;
+            //  la cantidad restante en el carrito despues de la eliminacion
+            int cantidadRestante = cantidadActual - cantidadEliminar;
 
-                    // Actualizar el stock en la base de datos
-                    String sqlUpdate = "UPDATE productos SET stock = ? WHERE marca = ?";
-                    PreparedStatement pstmtUpdate = conn.prepareStatement(sqlUpdate);
-                    pstmtUpdate.setInt(1, nuevoStock);
-                    pstmtUpdate.setString(2, producto);
-                    int filasAfectadas = pstmtUpdate.executeUpdate();
+            String producto = (String) jTable2.getValueAt(row, 0);
 
-                    if (filasAfectadas > 0) {
-                        // Actualizar la tabla de productos
-                        actualizarTablaProductos();
-                        
-                        // Si la cantidad restante es 0, eliminamos el producto del carrito
-                        DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
-                        if (cantidadRestante == 0) {
-                            modeloCarrito.removeRow(row);
-                            JOptionPane.showMessageDialog(this, "El producto ha sido eliminado del carrito.", "Producto eliminado", JOptionPane.INFORMATION_MESSAGE);
+            // Conectar con la base de datos para actualizar el stock
+            Connection conn = ConexionBD.getInstancia().getConexion();
+            if (conn != null) {
+                try {
+                    // Verificar el stock actual del producto en la base de datos
+                    String sqlCheck = "SELECT stock FROM productos WHERE marca = ?";
+                    PreparedStatement pstmtCheck = conn.prepareStatement(sqlCheck);
+                    pstmtCheck.setString(1, producto);
+                    ResultSet rsCheck = pstmtCheck.executeQuery();
+
+                    if (rsCheck.next()) {
+                        int stockActual = rsCheck.getInt("stock");
+
+                        // Sumar la cantidad eliminada al stock (es decir, devolverla al stock)
+                        int nuevoStock = stockActual + cantidadEliminar;
+
+                        // Actualizar el stock en la base de datos
+                        String sqlUpdate = "UPDATE productos SET stock = ? WHERE marca = ?";
+                        PreparedStatement pstmtUpdate = conn.prepareStatement(sqlUpdate);
+                        pstmtUpdate.setInt(1, nuevoStock);
+                        pstmtUpdate.setString(2, producto);
+                        int filasAfectadas = pstmtUpdate.executeUpdate();
+
+                        if (filasAfectadas > 0) {
+                            // Actualizar la tabla de productos
+                            actualizarTablaProductos();
+
+                            // Si la cantidad restante es 0, eliminamos el producto del carrito
+                            DefaultTableModel modeloCarrito = (DefaultTableModel) jTable2.getModel();
+                            if (cantidadRestante == 0) {
+                                modeloCarrito.removeRow(row);
+                                JOptionPane.showMessageDialog(this, "El producto ha sido eliminado del carrito.", "Producto eliminado", JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                // Si la cantidad restante es mayor que 0, actualizar la cantidad y el subtotal en el carrito
+                                double precio = (double) jTable2.getValueAt(row, 1);  // Precio del producto
+                                modeloCarrito.setValueAt(cantidadRestante, row, 2);  // Actualizamos la cantidad
+                                modeloCarrito.setValueAt(cantidadRestante * precio, row, 3);  // Actualizamos el subtotal
+                                JOptionPane.showMessageDialog(this, "La cantidad se ha actualizado en el carrito.", "Cantidad actualizada", JOptionPane.INFORMATION_MESSAGE);
+                            }
+
+                            // Actualizar el total del carrito
+                            actualizarTotal();
                         } else {
-                            // Si la cantidad restante es mayor que 0, actualizar la cantidad y el subtotal en el carrito
-                            double precio = (double) jTable2.getValueAt(row, 1);  // Precio del producto
-                            modeloCarrito.setValueAt(cantidadRestante, row, 2);  // Actualizamos la cantidad
-                            modeloCarrito.setValueAt(cantidadRestante * precio, row, 3);  // Actualizamos el subtotal
-                            JOptionPane.showMessageDialog(this, "La cantidad se ha actualizado en el carrito.", "Cantidad actualizada", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(this, "No se pudo actualizar el stock en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
-
-                        // Actualizar el total del carrito
-                        actualizarTotal();
                     } else {
-                        JOptionPane.showMessageDialog(this, "No se pudo actualizar el stock en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Producto no encontrado en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Producto no encontrado en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                    pstmtCheck.close();
+                    rsCheck.close();
+                    conn.close();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error al verificar o actualizar el stock en la base de datos.");
                 }
-
-                pstmtCheck.close();
-                rsCheck.close();
-                conn.close();
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error al verificar o actualizar el stock en la base de datos.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error de conexion a la base de datos.");
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Error de conexion a la base de datos.");
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para modificar la cantidad.");
         }
-    } else {
-        JOptionPane.showMessageDialog(this, "Seleccione un producto para modificar la cantidad.");
-    }
     }//GEN-LAST:event_btnEliminarCantidadActionPerformed
 
-    
-    
-    
-    
+
     private void btnInfoClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInfoClienteActionPerformed
         // TODO add your handling code here:
-        
+
         // Validar los campos de cliente
-    String nombreCliente = txtNombreCliente.getText().trim();
-    String cedula = txtCedula.getText().trim();
-    
-    if (nombreCliente.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del cliente.", 
-                "Campo Vacio", JOptionPane.WARNING_MESSAGE);
-        txtNombreCliente.requestFocus();
-        return;
-    }
-    
-    if (cedula.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Debe ingresar la cedula del cliente.", 
-                "Campo Vacio", JOptionPane.WARNING_MESSAGE);
-        txtCedula.requestFocus();
-        return;
-    }
-    
-    // Validar que la cédula contenga solo números
-    try {
-        Integer.parseInt(cedula);
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "La cedula debe contener solo numeros.", 
-                "Formato Invalido", JOptionPane.ERROR_MESSAGE);
-        txtCedula.requestFocus();
-        return;
-    }
-    
-    // Si todo es valido, mostrar mensaje de confirmación
-    JOptionPane.showMessageDialog(this, 
-            "Datos del cliente validados correctamente.\n" +
-            "Cliente: " + nombreCliente + "\n" +
-            "Cedula: " + cedula,
-            "Datos Validos", JOptionPane.INFORMATION_MESSAGE);
+        String nombreCliente = txtNombreCliente.getText().trim();
+        String cedula = txtCedula.getText().trim();
+
+        if (nombreCliente.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del cliente.",
+                    "Campo Vacio", JOptionPane.WARNING_MESSAGE);
+            txtNombreCliente.requestFocus();
+            return;
+        }
+
+        if (cedula.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe ingresar la cedula del cliente.",
+                    "Campo Vacio", JOptionPane.WARNING_MESSAGE);
+            txtCedula.requestFocus();
+            return;
+        }
+
+        // Validar que la cédula contenga solo números
+        try {
+            Integer.parseInt(cedula);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La cedula debe contener solo numeros.",
+                    "Formato Invalido", JOptionPane.ERROR_MESSAGE);
+            txtCedula.requestFocus();
+            return;
+        }
+
+        // Si todo es valido, mostrar mensaje de confirmación
+        JOptionPane.showMessageDialog(this,
+                "Datos del cliente validados correctamente.\n"
+                + "Cliente: " + nombreCliente + "\n"
+                + "Cedula: " + cedula,
+                "Datos Validos", JOptionPane.INFORMATION_MESSAGE);
 
     }//GEN-LAST:event_btnInfoClienteActionPerformed
 
-    
-    
+
     private void btnActualizarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarProductosActionPerformed
         // TODO add your handling code here:
-        cargarProductos();  
+        cargarProductos();
 
     }//GEN-LAST:event_btnActualizarProductosActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        setVisible(false);
+        VentanaPrincipal vp = new VentanaPrincipal();
+        vp.mostarVP();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    
-  
     /**
      * @param args the command line arguments
      */
@@ -1011,5 +1012,5 @@ public class ventanaProductos extends javax.swing.JFrame {
     private javax.swing.JTextField txtCedula;
     private javax.swing.JTextField txtNombreCliente;
     // End of variables declaration//GEN-END:variables
- 
+
 }

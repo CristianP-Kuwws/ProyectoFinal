@@ -7,6 +7,9 @@ import java.math.BigDecimal;
  * @author hazky
  */
 public interface IFacturaDAO {
-    boolean agregarFactura(int idEmpleado, BigDecimal total, BigDecimal subtotal, BigDecimal itbis);
+
+    Integer agregarFacturaYObtenerID(int idEmpleado, BigDecimal total, BigDecimal subtotal, BigDecimal itbis, String cedulaCliente);
+
     boolean eliminarFactura(int idFactura);
+
 }

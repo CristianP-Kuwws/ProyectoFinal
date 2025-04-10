@@ -27,6 +27,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
      */
     public VentanaAdmin() {
         initComponents();
+        this.setLocationRelativeTo(null);
         actualizartabla();
 
     }
@@ -274,7 +275,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                     .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
-                .addContainerGap(84, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Agregar", jPanel3);
@@ -310,7 +311,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                     .addComponent(TFIDe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addContainerGap(178, Short.MAX_VALUE))
+                .addContainerGap(180, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Eliminar", jPanel4);
@@ -399,7 +400,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(38, 38, 38)
                         .addComponent(jButton1)))
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addContainerGap(76, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Editar", jPanel7);
@@ -438,11 +439,11 @@ public class VentanaAdmin extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("gestion", jPanel1);
 
-        jLabel1.setFont(new java.awt.Font("Yu Gothic UI Semilight", 3, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(111, 162, 195));
         jLabel1.setText("Ventana administrativa");
 
-        jButton6.setText("cerrar sesion");
+        jButton6.setText("Cerrar Sesion");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -474,7 +475,7 @@ public class VentanaAdmin extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jButton6)))
                 .addGap(18, 18, 18)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -492,74 +493,6 @@ public class VentanaAdmin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    Connection conexion = null;
-    ResultSet seteo = null;
-
-    void actualizartabla() {
-
-        try {
-            conexion = ConexionBD.getInstancia().getConexion();
-            modelof.setRowCount(0);
-
-            Statement statement = conexion.createStatement();
-            ResultSet resultset = statement.executeQuery("select idFactura,total,fecha,idcliente from factura");
-
-            while (resultset.next()) {
-                modelof.addRow(new Object[]{
-                    resultset.getInt("idFactura"), resultset.getString("total"), resultset.getString("fecha"), resultset.getString("idcliente")
-                });
-            }
-            resultset.close();
-            statement.close();
-
-        } catch (SQLException e) {
-            System.out.println("Error al cargar tablas" + e.getMessage());
-        } finally {
-            // Para que la conexion siga activa
-            try {
-                if (seteo != null) {
-                    seteo.close();
-                }
-
-            } catch (SQLException e) {
-                System.out.println("Error al cargar tablas " + e.getMessage());
-            }
-        }
-
-        //
-        try {
-            conexion = ConexionBD.getInstancia().getConexion();
-
-            modelop.setRowCount(0);
-            Statement statement = conexion.createStatement();
-
-            ResultSet resultset = statement.executeQuery("select idproductos,marca,precio,stock from productos");
-
-            while (resultset.next()) {
-                modelop.addRow(new Object[]{
-                    resultset.getInt("idproductos"), resultset.getString("marca"), resultset.getString("precio"), resultset.getString("stock")
-                });
-            }
-
-            resultset.close();
-            statement.close();
-
-        } catch (SQLException e) {
-            System.out.println("Error al cargar tablas" + e.getMessage());
-        } finally {
-            // Para que la conexion siga activa
-            try {
-                if (seteo != null) {
-                    seteo.close();
-                }
-
-            } catch (SQLException e) {
-                System.out.println("Error al cargar tablas " + e.getMessage());
-            }
-        }
-
-    }
-    
     //Ordenar por precio
     
     /**
@@ -640,6 +573,90 @@ public class VentanaAdmin extends javax.swing.JFrame {
         vp.mostarVP();
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        try {
+            int id = Integer.parseInt(TFPEid.getText());
+            String nom = TFPEnombre.getText();
+            BigDecimal precio = new BigDecimal(TFPEprecio.getText());
+            int stock = Integer.parseInt(TFPEstock.getText());
+
+            Producto productoEditado = new Producto(id, nom, precio, stock);
+
+            GestionProductosBD gestor = new GestionProductosBD();
+            if (gestor.editarProducto(productoEditado)) {
+                JOptionPane.showMessageDialog(null, "Producto editado correctamente");
+                // Limpiar campos
+                TFPEid.setText("");
+                TFPEnombre.setText("");
+                TFPEprecio.setText("");
+                TFPEstock.setText("");
+                actualizartabla();
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo editar el producto.");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error de formato en los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error de formato en los campos: " + e.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al editar producto.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error al editar producto: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            int id = Integer.parseInt(TFIDe.getText());
+
+            GestionProductosBD gestor = new GestionProductosBD();
+            if (gestor.eliminarProducto(id)) {
+                JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
+                TFIDe.setText("");
+                actualizartabla();
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo eliminar el producto. Verifica si el ID existe.");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "ID inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("ID inválido: " + e.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar producto.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error al eliminar producto: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        try {
+            String nom = TFPnombre.getText();
+            BigDecimal precio = new BigDecimal(TFPprecio.getText());
+            int stock = Integer.parseInt(TFPstock.getText());
+
+            Producto nuevoProducto = new Producto(nom, precio, stock);
+
+            GestionProductosBD gestor = new GestionProductosBD();
+            if (gestor.agregarProducto(nuevoProducto)) {
+                JOptionPane.showMessageDialog(null, "Producto agregado correctamente.");
+                // Limpiar campos
+                TFPnombre.setText("");
+                TFPprecio.setText("");
+                TFPstock.setText("");
+                actualizartabla();
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo agregar el producto. Verifica si el nombre ya existe.");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error de formato en precio o stock.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error de formato en precio o stock: " + e.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al agregar producto.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error al agregar producto: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
         try {
@@ -669,14 +686,12 @@ public class VentanaAdmin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "ID inválido.", "Error", JOptionPane.ERROR_MESSAGE);
             System.out.println("ID inválido: " + e.getMessage());
         }
-
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
         Registro vr = new Registro();
         vr.mostarVP();
-
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -716,101 +731,80 @@ public class VentanaAdmin extends javax.swing.JFrame {
                 System.out.println("Error al cargar tabla " + e.getMessage());
             }
         }
-
-
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void TFIDclienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFIDclienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_TFIDclienteActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+    Connection conexion = null;
+    ResultSet seteo = null;
+
+    void actualizartabla() {
+
         try {
-            String nom = TFPnombre.getText();
-            BigDecimal precio = new BigDecimal(TFPprecio.getText());
-            int stock = Integer.parseInt(TFPstock.getText());
+            conexion = ConexionBD.getInstancia().getConexion();
+            modelof.setRowCount(0);
 
-            Producto nuevoProducto = new Producto(nom, precio, stock);
+            Statement statement = conexion.createStatement();
+            ResultSet resultset = statement.executeQuery("select idFactura,total,fecha,idcliente from factura");
 
-            GestionProductosBD gestor = new GestionProductosBD();
-            if (gestor.agregarProducto(nuevoProducto)) {
-                JOptionPane.showMessageDialog(null, "Producto agregado correctamente.");
-                // Limpiar campos
-                TFPnombre.setText("");
-                TFPprecio.setText("");
-                TFPstock.setText("");
-                actualizartabla();
-            } else {
-                JOptionPane.showMessageDialog(null, "No se pudo agregar el producto. Verifica si el nombre ya existe.");
+            while (resultset.next()) {
+                modelof.addRow(new Object[]{
+                    resultset.getInt("idFactura"), resultset.getString("total"), resultset.getString("fecha"), resultset.getString("idcliente")
+                });
             }
+            resultset.close();
+            statement.close();
 
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error de formato en precio o stock.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("Error de formato en precio o stock: " + e.getMessage());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al agregar producto.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("Error al agregar producto: " + e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Error al cargar tablas" + e.getMessage());
+        } finally {
+            // Para que la conexion siga activa
+            try {
+                if (seteo != null) {
+                    seteo.close();
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Error al cargar tablas " + e.getMessage());
+            }
         }
 
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        //
         try {
-            int id = Integer.parseInt(TFPEid.getText());
-            String nom = TFPEnombre.getText();
-            BigDecimal precio = new BigDecimal(TFPEprecio.getText());
-            int stock = Integer.parseInt(TFPEstock.getText());
+            conexion = ConexionBD.getInstancia().getConexion();
 
-            Producto productoEditado = new Producto(id, nom, precio, stock);
+            modelop.setRowCount(0);
+            Statement statement = conexion.createStatement();
 
-            GestionProductosBD gestor = new GestionProductosBD();
-            if (gestor.editarProducto(productoEditado)) {
-                JOptionPane.showMessageDialog(null, "Producto editado correctamente");
-                // Limpiar campos
-                TFPEid.setText("");
-                TFPEnombre.setText("");
-                TFPEprecio.setText("");
-                TFPEstock.setText("");
-                actualizartabla();
-            } else {
-                JOptionPane.showMessageDialog(null, "No se pudo editar el producto.");
+            ResultSet resultset = statement.executeQuery("select idproductos,marca,precio,stock from productos");
+
+            while (resultset.next()) {
+                modelop.addRow(new Object[]{
+                    resultset.getInt("idproductos"), resultset.getString("marca"), resultset.getString("precio"), resultset.getString("stock")
+                });
             }
 
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error de formato en los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("Error de formato en los campos: " + e.getMessage());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al editar producto.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("Error al editar producto: " + e.getMessage());
-        }
+            resultset.close();
+            statement.close();
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+        } catch (SQLException e) {
+            System.out.println("Error al cargar tablas" + e.getMessage());
+        } finally {
+            // Para que la conexion siga activa
+            try {
+                if (seteo != null) {
+                    seteo.close();
+                }
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        try {
-            int id = Integer.parseInt(TFIDe.getText());
-
-            GestionProductosBD gestor = new GestionProductosBD();
-            if (gestor.eliminarProducto(id)) {
-                JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
-                TFIDe.setText("");
-                actualizartabla();
-            } else {
-                JOptionPane.showMessageDialog(null, "No se pudo eliminar el producto. Verifica si el ID existe.");
+            } catch (SQLException e) {
+                System.out.println("Error al cargar tablas " + e.getMessage());
             }
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "ID inválido.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("ID inválido: " + e.getMessage());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al eliminar producto.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("Error al eliminar producto: " + e.getMessage());
         }
 
-    }//GEN-LAST:event_jButton2ActionPerformed
-
+    }
+    
     /**
      * @param args the command line arguments
      */

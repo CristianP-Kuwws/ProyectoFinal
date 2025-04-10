@@ -8,6 +8,7 @@ import Clases.Personas.Administrador;
 import Clases.Personas.Empleado;
 import Clases.Personas.Usuario;
 import Datos.DAOS.LoginUsuarioBD;
+import Datos.SesionActual;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
@@ -212,6 +213,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        
+        SesionActual.setUsuarioActual(usuarioActual); // Guardas la sesión
+
         
         //La instancia de usuario se determina mediante la clase login.
 

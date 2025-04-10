@@ -6,36 +6,45 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
  * @author hazky
  */
-//SOLO PARA HISTORIAL DE FACTURAS
+
 public class GestionFacturaBD implements IFacturaDAO {
 
-    //la fecha es automaticamente generada por la bd 
     @Override
-    public boolean agregarFactura(int idEmpleado, BigDecimal total, BigDecimal subtotal, BigDecimal itbis) {
-        String query = "INSERT INTO Factura (idEmpleado, total, subtotal, itbis) VALUES (?, ?, ?, ?)";
+    public Integer agregarFacturaYObtenerID(int idEmpleado, BigDecimal total, BigDecimal subtotal, BigDecimal itbis, String idcliente) {
+        String query = "INSERT INTO Factura (idEmpleado, total, subtotal, itbis, idcliente) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conexion = ConexionBD.getInstancia().getConexion(); PreparedStatement consultaPrep = conexion.prepareStatement(query)) {
+        try (Connection conexion = ConexionBD.getInstancia().getConexion(); PreparedStatement consultaPrep = conexion.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             consultaPrep.setInt(1, idEmpleado);
             consultaPrep.setBigDecimal(2, total);
             consultaPrep.setBigDecimal(3, subtotal);
             consultaPrep.setBigDecimal(4, itbis);
+            consultaPrep.setString(5, idcliente);
 
             int filas = consultaPrep.executeUpdate();
-            return filas > 0;
+
+            if (filas > 0) {
+                ResultSet rs = consultaPrep.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
 
         } catch (SQLException e) {
             System.out.println("Error al agregar factura: " + e.getMessage());
-            return false;
         }
-    }
 
+        return null;
+    }
+    
     @Override
     public boolean eliminarFactura(int idFactura) {
         String query = "DELETE FROM Factura WHERE idFactura = ?";
@@ -51,5 +60,5 @@ public class GestionFacturaBD implements IFacturaDAO {
             return false;
         }
     }
-
+    
 }
